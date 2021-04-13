@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Utility functions &mdash; Permutation tests and confidence sets 0.1.alpha5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.alpha5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Permutation tests and confidence sets 0.1.alpha5 documentation" href="../index.html" />
+    <link rel="up" title="API Reference" href="index.html" />
+    <link rel="next" title="Quality assurance" href="qa.html" />
+    <link rel="prev" title="Data sets" href="data.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Permutation tests and confidence sets</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.alpha5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Utility functions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="data.html" title="Previous Chapter: Data sets"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Data sets</span>
+    </a>
+  </li>
+  <li>
+    <a href="qa.html" title="Next Chapter: Quality assurance"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Quality assur... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="module-permute.utils">
+<span id="utility-functions"></span><h1>Utility functions<a class="headerlink" href="#module-permute.utils" title="Permalink to this headline">¶</a></h1>
+<p>Various utilities and helper functions.</p>
+<dl class="function">
+<dt id="permute.utils.binom_conf_interval">
+<code class="descclassname">permute.utils.</code><code class="descname">binom_conf_interval</code><span class="sig-paren">(</span><em>n</em>, <em>x</em>, <em>cl=0.975</em>, <em>alternative='two-sided'</em>, <em>p=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#binom_conf_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.binom_conf_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a confidence interval for a binomial p, the probability of success in each trial.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<em>int</em>) &#8211; The number of Bernoulli trials.</li>
+<li><strong>x</strong> (<em>int</em>) &#8211; The number of successes.</li>
+<li><strong>cl</strong> (<em>float in (0, 1)</em>) &#8211; The desired confidence level.</li>
+<li><strong>alternative</strong> (<em>{&#8220;two-sided&#8221;, &#8220;lower&#8221;, &#8220;upper&#8221;}</em>) &#8211; Indicates the alternative hypothesis.</li>
+<li><strong>p</strong> (<em>float in (0, 1)</em>) &#8211; Starting point in search for confidence bounds for probability of success in each trial.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Key word arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lower and upper confidence level with coverage (approximately)
+1-alpha.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>xtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance</dd>
+<dt>rtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance</dd>
+<dt>maxiter <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Maximum number of iterations.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.get_prng">
+<code class="descclassname">permute.utils.</code><code class="descname">get_prng</code><span class="sig-paren">(</span><em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#get_prng"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.get_prng" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn seed into a np.random.RandomState instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> (<em>{None, int, RandomState}</em>) &#8211; If seed is None, return the RandomState singleton used by np.random.
+If seed is an int, return a new RandomState instance seeded with seed.
+If seed is already a RandomState instance, return it.
+Otherwise raise ValueError.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">RandomState</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.hypergeom_conf_interval">
+<code class="descclassname">permute.utils.</code><code class="descname">hypergeom_conf_interval</code><span class="sig-paren">(</span><em>n</em>, <em>x</em>, <em>N</em>, <em>cl=0.975</em>, <em>alternative='two-sided'</em>, <em>G=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#hypergeom_conf_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.hypergeom_conf_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confidence interval for a hypergeometric distribution parameter G, the number of good
+objects in a population in size N, based on the number x of good objects in a simple
+random sample of size n.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<em>int</em>) &#8211; The number of draws without replacement.</li>
+<li><strong>x</strong> (<em>int</em>) &#8211; The number of &#8220;good&#8221; objects in the sample.</li>
+<li><strong>N</strong> (<em>int</em>) &#8211; The number of objects in the population.</li>
+<li><strong>cl</strong> (<em>float in (0, 1)</em>) &#8211; The desired confidence level.</li>
+<li><strong>alternative</strong> (<em>{&#8220;two-sided&#8221;, &#8220;lower&#8221;, &#8220;upper&#8221;}</em>) &#8211; Indicates the alternative hypothesis.</li>
+<li><strong>G</strong> (<em>int in [0, N]</em>) &#8211; Starting point in search for confidence bounds for the hypergeometric parameter G.</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; Key word arguments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">lower and upper confidence level with coverage (at least)
+1-alpha.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>xtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance</dd>
+<dt>rtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance</dd>
+<dt>maxiter <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Maximum number of iterations.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.permute">
+<code class="descclassname">permute.utils.</code><code class="descname">permute</code><span class="sig-paren">(</span><em>x</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#permute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.permute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permute an array in-place</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; A 1-d array</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Original array is permuted in-place, nothing is returned.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.permute_incidence_fixed_sums">
+<code class="descclassname">permute.utils.</code><code class="descname">permute_incidence_fixed_sums</code><span class="sig-paren">(</span><em>incidence</em>, <em>k=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#permute_incidence_fixed_sums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.permute_incidence_fixed_sums" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permute elements of a (binary) incidence matrix, keeping the
+row and column sums in-tact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>incidence</strong> (<em>2D ndarray</em>) &#8211; Incidence matrix to permute.</li>
+<li><strong>k</strong> (<em>int</em>) &#8211; The number of successful pairwise swaps to perform.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The row and column sums are kept fixed by always swapping elements
+two pairs at a time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>permuted</strong> &#8211;
+The permuted incidence matrix.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">2D ndarray</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.permute_rows">
+<code class="descclassname">permute.utils.</code><code class="descname">permute_rows</code><span class="sig-paren">(</span><em>m</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#permute_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.permute_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permute the rows of a matrix in-place</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m</strong> (<em>array-like</em>) &#8211; A 2-d array</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Original matrix is permuted in-place, nothing is returned.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.permute_within_groups">
+<code class="descclassname">permute.utils.</code><code class="descname">permute_within_groups</code><span class="sig-paren">(</span><em>x</em>, <em>group</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#permute_within_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.permute_within_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Permutation of condition within each group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; A 1-d array indicating treatment.</li>
+<li><strong>group</strong> (<em>array-like</em>) &#8211; A 1-d array indicating group membership</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>permuted</strong> &#8211;
+The within group permutation of x.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">array-like</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.utils.potential_outcomes">
+<code class="descclassname">permute.utils.</code><code class="descname">potential_outcomes</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>f</em>, <em>finverse</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/utils.html#potential_outcomes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.utils.potential_outcomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given observations x under treatment and y under control conditions,
+returns the potential outcomes for units under their unobserved condition
+under the hypothesis that x_i = f(y_i) for all units.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; Outcomes under treatment</li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; Outcomes under control</li>
+<li><strong>f</strong> (<em>function</em>) &#8211; An invertible function</li>
+<li><strong>finverse</strong> (<em>function</em>) &#8211; The inverse function to f.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>potential_outcomes</strong> &#8211;
+The first column contains all potential outcomes under the treatment,
+the second column contains all potential outcomes under the control.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">2D array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015-2019, K. Jarrod Millman, Kellie Ottoboni, and Philip B. Stark.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

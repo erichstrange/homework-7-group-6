@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 1-4 examples &mdash; Permutation tests and confidence sets 0.1.alpha5 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.alpha5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Permutation tests and confidence sets 0.1.alpha5 documentation" href="../../index.html" />
+    <link rel="up" title="Permutation Tests for Complex Data" href="index.html" />
+    <link rel="next" title="References" href="../references.html" />
+    <link rel="prev" title="Kenya" href="kenya.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          Permutation tests and confidence sets</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.alpha5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/index.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Chapter 1-4 examples</a><ul>
+<li><a class="reference internal" href="#ipat-data">IPAT Data</a></li>
+<li><a class="reference internal" href="#job-satisfaction-data">Job Satisfaction Data</a></li>
+<li><a class="reference internal" href="#worms-data">Worms Data</a></li>
+<li><a class="reference internal" href="#testosterone-data">Testosterone Data</a></li>
+<li><a class="reference internal" href="#massaro-blair-data">Massaro-Blair Data</a></li>
+<li><a class="reference internal" href="#fly-data">Fly Data</a></li>
+<li><a class="reference internal" href="#post-hoc-conditional-power-analysis">Post-hoc conditional power analysis</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="kenya.html" title="Previous Chapter: Kenya"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Kenya</span>
+    </a>
+  </li>
+  <li>
+    <a href="../references.html" title="Next Chapter: References"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">References &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="chapter-1-4-examples">
+<h1>Chapter 1-4 examples<a class="headerlink" href="#chapter-1-4-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ipat-data">
+<h2>IPAT Data<a class="headerlink" href="#ipat-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 1.9, page 33-34.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">permute.data</span> <span class="kn">as</span> <span class="nn">data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">permute.core</span> <span class="kn">import</span> <span class="n">one_sample</span><span class="p">,</span> <span class="n">two_sample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">permute.ksample</span> <span class="kn">import</span> <span class="n">k_sample</span><span class="p">,</span> <span class="n">bivariate_k_sample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">permute.utils</span> <span class="kn">import</span> <span class="n">get_prng</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prng</span> <span class="o">=</span> <span class="n">get_prng</span><span class="p">(</span><span class="mi">2019426</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ipat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ipat</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ipat_res</span> <span class="o">=</span> <span class="n">one_sample</span><span class="p">(</span><span class="n">ipat</span><span class="o">.</span><span class="n">ya</span><span class="p">,</span> <span class="n">ipat</span><span class="o">.</span><span class="n">yb</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;greater&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">prng</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;P-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">ipat_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">P-value: 0.0002</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="job-satisfaction-data">
+<h2>Job Satisfaction Data<a class="headerlink" href="#job-satisfaction-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 1.10.3, page 41-42.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">job</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">job</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">job_res</span> <span class="o">=</span> <span class="n">two_sample</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">job</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">job</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">job</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="mi">2</span><span class="p">],</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">reps</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">5</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;greater&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">prng</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;P-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">job_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">P-value: 0.0003</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="worms-data">
+<h2>Worms Data<a class="headerlink" href="#worms-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 1.11.12, page 47-48.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">worms</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">worms</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">k_sample</span><span class="p">(</span><span class="n">worms</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">worms</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;one-way anova&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">prng</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ANOVA p-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">ANOVA p-value: 0.0107</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testosterone-data">
+<h2>Testosterone Data<a class="headerlink" href="#testosterone-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 2.6.1, page 92-93.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">testosterone</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">testosterone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">testosterone</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">group1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">testosterone</span><span class="p">))])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">group2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">testosterone</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">group1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">group2</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="go">55 55 55</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">bivariate_k_sample</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">group1</span><span class="p">,</span> <span class="n">group2</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">prng</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;ANOVA p-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">ANOVA p-value: 0.0002</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="massaro-blair-data">
+<h2>Massaro-Blair Data<a class="headerlink" href="#massaro-blair-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 4.6, page 240.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">permute.npc</span> <span class="kn">import</span> <span class="n">npc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mb</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">massaro_blair</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sam1</span> <span class="o">=</span> <span class="n">mb</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">mb</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sam2</span> <span class="o">=</span> <span class="n">mb</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">mb</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first_moment</span> <span class="o">=</span> <span class="n">two_sample</span><span class="p">(</span><span class="n">sam1</span><span class="p">,</span> <span class="n">sam2</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;two-sided&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">keep_dist</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">second_moment</span> <span class="o">=</span> <span class="n">two_sample</span><span class="p">(</span><span class="n">sam1</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sam2</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;two-sided&#39;</span><span class="p">,</span> <span class="n">reps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">keep_dist</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">423</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">partial_pvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">first_moment</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">second_moment</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Partial p-values:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">first_moment</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">second_moment</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">Partial p-values: 0.017 0.009</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">npc_distr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">first_moment</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">second_moment</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">global_p</span> <span class="o">=</span> <span class="n">npc</span><span class="p">(</span><span class="n">partial_pvalues</span><span class="p">,</span> <span class="n">npc_distr</span><span class="p">,</span> <span class="n">alternatives</span><span class="o">=</span><span class="s1">&#39;two-sided&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;Global p-value:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">global_p</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="go">Global p-value: 0.0018</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fly-data">
+<h2>Fly Data<a class="headerlink" href="#fly-data" title="Permalink to this headline">¶</a></h2>
+<p>This example is shown in Chapter 4.6, page 253.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>fly = data.fly()
+vars = fly.dtype.names[1:]
+results = {}
+for col in vars:
+    sam1 = fly[col][fly.group == 0]
+    sam2 = fly[col][fly.group == 1]
+    if col == &#39;x7&#39;:
+        results[str(col)] = two_sample(sam1, sam2, keep_dist=True, seed=prng, plus1=True, reps=10**4)
+    else:
+        results[str(col)] = two_sample(sam1, sam2, keep_dist=True, alternative = &#39;less&#39;, seed=prng, plus1=True, reps=10**4)
+partial_pvalues = np.array(list(map(lambda col: results[col][0], vars)))
+print(np.round(partial_pvalues, 3))
+[0.022 0.212 0.    0.337 0.    0.332 0.096]
+
+npc_distr = np.array(list(map(lambda col: results[col][2], vars))).T
+npc_distr.shape
+000, 7)
+alternatives = [&#39;greater&#39;]*6 + [&#39;less&#39;]*1
+fisher = npc(partial_pvalues, npc_distr, alternatives=alternatives)
+liptak = npc(partial_pvalues, npc_distr, alternatives=alternatives, combine = &#39;liptak&#39;)
+tippett = npc(partial_pvalues, npc_distr, alternatives=alternatives, combine=&#39;tippett&#39;)
+print(&quot;Fisher combined p-value:&quot;, fisher)
+er combined p-value: 0.0
+print(&quot;Liptak combined p-value:&quot;, liptak)
+ak combined p-value: 0.0
+print(&quot;Tippett combined p-value:&quot;, tippett)
+Tippett combined p-value: 0.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="post-hoc-conditional-power-analysis">
+<h2>Post-hoc conditional power analysis<a class="headerlink" href="#post-hoc-conditional-power-analysis" title="Permalink to this headline">¶</a></h2>
+<p>These examples come from Chapter 3.2.1, pages 139-141.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span># IPAT data
+alpha = 0.01
+prng = get_prng(78943501)
+effect_est = ipat_res[1]
+print(&quot;Estimated difference in means:&quot;, effect_est)
+Estimated difference in means: 3.1
+
+z = ipat.ya - ipat.yb - effect_est
+simulated_pvalues = np.zeros(1000)
+for i in range(1000):
+    prng.shuffle(z)
+    sim_sam = z.copy() + effect_est
+    simulated_pvalues[i] = one_sample(sim_sam, stat=&#39;mean&#39;, alternative=&#39;greater&#39;, seed=1234, reps=1000)[0]
+power = np.mean(simulated_pvalues &lt;= alpha)
+print(&quot;Estimated power:&quot;, power)
+Estimated power: 1.0
+
+# Job data
+effect_est = job_res[1]
+print(&quot;Estimated difference in means:&quot;, effect_est)
+Estimated difference in means: 17.29166666666667
+
+xnorm = job.x
+xnorm[job.y == 1] = job.x[job.y == 1] - effect_est
+simulated_pvalues = np.zeros(1000)
+for i in range(1000):
+    prng.shuffle(xnorm)
+    sim_sam = xnorm.copy()
+    sim_sam[job.y==1] = sim_sam[job.y==1] + effect_est
+    simulated_pvalues[i] = two_sample(sim_sam[job.y == 1], sim_sam[job.y == 2], stat=&#39;mean&#39;, reps = 10**3, alternative=&#39;greater&#39;, seed=1234)[0]
+power = np.mean(simulated_pvalues &lt;= alpha)
+print(&quot;Estimated power:&quot;, power)
+Estimated power: 0.96
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015-2019, K. Jarrod Millman, Kellie Ottoboni, and Philip B. Stark.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

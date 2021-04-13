@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Core functions &mdash; Permutation tests and confidence sets 0.1.alpha5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.alpha5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Permutation tests and confidence sets 0.1.alpha5 documentation" href="../index.html" />
+    <link rel="up" title="API Reference" href="index.html" />
+    <link rel="next" title="Stratified testing" href="stratified.html" />
+    <link rel="prev" title="Quality assurance" href="qa.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Permutation tests and confidence sets</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.alpha5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Core functions</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="qa.html" title="Previous Chapter: Quality assurance"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Quality assur...</span>
+    </a>
+  </li>
+  <li>
+    <a href="stratified.html" title="Next Chapter: Stratified testing"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Stratified te... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="module-permute.core">
+<span id="core-functions"></span><h1>Core functions<a class="headerlink" href="#module-permute.core" title="Permalink to this headline">¶</a></h1>
+<p>Core.</p>
+<dl class="function">
+<dt id="permute.core.corr">
+<code class="descclassname">permute.core.</code><code class="descname">corr</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>reps=10000</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate permutation p-value for Spearman correlation coefficient</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; </li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; </li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; </li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Returns test statistic, left-sided p-value,
+right-sided p-value, two-sided p-value, simulated distribution</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.core.one_sample">
+<code class="descclassname">permute.core.</code><code class="descname">one_sample</code><span class="sig-paren">(</span><em>x</em>, <em>y=None</em>, <em>reps=100000</em>, <em>stat='mean'</em>, <em>alternative='greater'</em>, <em>keep_dist=False</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#one_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.one_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>One-sided or two-sided, one-sample permutation test for the mean,
+with p-value estimated by simulated random sampling with
+reps replications.</p>
+<p>Alternatively, a permutation test for equality of means of two paired
+samples.</p>
+<p>Tests the hypothesis that x is distributed symmetrically symmetric about 0
+(or x and y have the same center) against the alternative that x comes from
+a population with mean</p>
+<ol class="loweralpha simple">
+<li>greater than 0 (greater than that of the population from which y comes),
+if side = &#8216;greater&#8217;</li>
+<li>less than 0 (less than that of the population from which y comes),
+if side = &#8216;less&#8217;</li>
+<li>different from 0 (different from that of the population from which y comes),
+if side = &#8216;two-sided&#8217;</li>
+</ol>
+<p>If <code class="docutils literal"><span class="pre">keep_dist</span></code>, return the distribution of values of the test statistic;
+otherwise, return only the number of permutations for which the value of
+the test statistic and p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; Sample 1</li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; Sample 2. Must preserve the order of pairs with x.
+If None, x is taken to be the one sample.</li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; number of repetitions</li>
+<li><strong>stat</strong> (<em>{&#8216;mean&#8217;, &#8216;t&#8217;}</em>) &#8211; <p>The test statistic. The statistic is computed based on either z = x or
+z = x - y, if y is specified.</p>
+<ol class="loweralpha">
+<li>If stat == &#8216;mean&#8217;, the test statistic is mean(z).</li>
+<li>If stat == &#8216;t&#8217;, the test statistic is the t-statistic&#8211;
+but the p-value is still estimated by the randomization,
+approximating the permutation distribution.</li>
+<li>If stat is a function (a callable object), the test statistic is
+that function.  The function should take a permutation of the
+data and compute the test function from it. For instance, if the
+test statistic is the maximum absolute value, max_i <a href="#id1"><span class="problematic" id="id2">|z_i|</span></a>,
+the test statistic could be written:<p>f = lambda u: np.max(abs(u))</p>
+</li>
+</ol>
+</li>
+<li><strong>alternative</strong> (<em>{&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;}</em>) &#8211; The alternative hypothesis to test</li>
+<li><strong>keep_dist</strong> (<em>bool</em>) &#8211; flag for whether to store and return the array of values
+of the irr test statistic</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>float</em> &#8211;
+the estimated p-value</li>
+<li><em>float</em> &#8211;
+the test statistic</li>
+<li><em>list</em> &#8211;
+The distribution of test statistics.
+These values are only returned if <cite>keep_dist</cite> == True</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.core.two_sample">
+<code class="descclassname">permute.core.</code><code class="descname">two_sample</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>reps=100000</em>, <em>stat='mean'</em>, <em>alternative='greater'</em>, <em>keep_dist=False</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#two_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.two_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>One-sided or two-sided, two-sample permutation test for equality of
+two means, with p-value estimated by simulated random sampling with
+reps replications.</p>
+<p>Tests the hypothesis that x and y are a random partition of x,y
+against the alternative that x comes from a population with mean</p>
+<ol class="loweralpha simple">
+<li>greater than that of the population from which y comes,
+if side = &#8216;greater&#8217;</li>
+<li>less than that of the population from which y comes,
+if side = &#8216;less&#8217;</li>
+<li>different from that of the population from which y comes,
+if side = &#8216;two-sided&#8217;</li>
+</ol>
+<p>If <code class="docutils literal"><span class="pre">keep_dist</span></code>, return the distribution of values of the test statistic;
+otherwise, return only the number of permutations for which the value of
+the test statistic and p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; Sample 1</li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; Sample 2</li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; number of repetitions</li>
+<li><strong>stat</strong> (<em>{&#8216;mean&#8217;, &#8216;t&#8217;}</em>) &#8211; <p>The test statistic.</p>
+<ol class="loweralpha">
+<li>If stat == &#8216;mean&#8217;, the test statistic is (mean(x) - mean(y))
+(equivalently, sum(x), since those are monotonically related)</li>
+<li>If stat == &#8216;t&#8217;, the test statistic is the two-sample t-statistic&#8211;
+but the p-value is still estimated by the randomization,
+approximating the permutation distribution.
+The t-statistic is computed using scipy.stats.ttest_ind</li>
+<li>If stat is a function (a callable object), the test statistic is
+that function.  The function should take a permutation of the pooled
+data and compute the test function from it. For instance, if the
+test statistic is the Kolmogorov-Smirnov distance between the
+empirical distributions of the two samples, <code class="docutils literal"><span class="pre">max_t</span> <span class="pre">|F_x(t)</span> <span class="pre">-</span> <span class="pre">F_y(t)|</span></code>,
+the test statistic could be written:<p>f = lambda u: np.max(                 [abs(sum(u[:len(x)]&lt;=v)/len(x)-sum(u[len(x):]&lt;=v)/len(y)) for v in u]                )</p>
+</li>
+</ol>
+</li>
+<li><strong>alternative</strong> (<em>{&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;}</em>) &#8211; The alternative hypothesis to test</li>
+<li><strong>keep_dist</strong> (<em>bool</em>) &#8211; flag for whether to store and return the array of values
+of the irr test statistic</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>float</em> &#8211;
+the estimated p-value</li>
+<li><em>float</em> &#8211;
+the test statistic</li>
+<li><em>list</em> &#8211;
+The distribution of test statistics.
+These values are only returned if <cite>keep_dist</cite> == True</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.core.two_sample_conf_int">
+<code class="descclassname">permute.core.</code><code class="descname">two_sample_conf_int</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>cl=0.95</em>, <em>alternative='two-sided'</em>, <em>seed=None</em>, <em>reps=10000</em>, <em>stat='mean'</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#two_sample_conf_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.two_sample_conf_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>One-sided or two-sided confidence interval for the parameter determining
+the treatment effect.  The default is the &#8220;shift model&#8221;, where we are
+interested in the parameter d such that x is equal in distribution to
+y + d. In general, if we have some family of invertible functions parameterized
+by d, we&#8217;d like to find d such that x is equal in distribution to f(y, d).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; Sample 1</li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; Sample 2</li>
+<li><strong>cl</strong> (<em>float in (0, 1)</em>) &#8211; The desired confidence level. Default 0.95.</li>
+<li><strong>alternative</strong> (<em>{&#8220;two-sided&#8221;, &#8220;lower&#8221;, &#8220;upper&#8221;}</em>) &#8211; Indicates the alternative hypothesis.</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; number of repetitions in two_sample</li>
+<li><strong>stat</strong> (<em>{&#8216;mean&#8217;, &#8216;t&#8217;}</em>) &#8211; <p>The test statistic.</p>
+<ol class="loweralpha">
+<li>If stat == &#8216;mean&#8217;, the test statistic is (mean(x) - mean(y))
+(equivalently, sum(x), since those are monotonically related)</li>
+<li>If stat == &#8216;t&#8217;, the test statistic is the two-sample t-statistic&#8211;
+but the p-value is still estimated by the randomization,
+approximating the permutation distribution.
+The t-statistic is computed using scipy.stats.ttest_ind</li>
+<li>If stat is a function (a callable object), the test statistic is
+that function.  The function should take a permutation of the pooled
+data and compute the test function from it. For instance, if the
+test statistic is the Kolmogorov-Smirnov distance between the
+empirical distributions of the two samples, max_t <a href="#id3"><span class="problematic" id="id4">|F_x(t) - F_y(t)|</span></a>,
+the test statistic could be written:<p>f = lambda u: np.max(                 [abs(sum(u[:len(x)]&lt;=v)/len(x)-sum(u[len(x):]&lt;=v)/len(y)) for v in u]                )</p>
+</li>
+</ol>
+</li>
+<li><strong>shift</strong> (<em>float</em>) &#8211; <p>The relationship between x and y under the null hypothesis.</p>
+<ol class="loweralpha">
+<li>If None, the relationship is assumed to be additive (e.g. x = y+d)</li>
+<li>A tuple containing the function and its inverse (f, finverse), so
+x_i = f(y_i, d) and y_i = finverse(x_i, d)</li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the estimated confidence limits</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>xtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance in brentq</dd>
+<dt>rtol <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Tolerance in brentq</dd>
+<dt>maxiter <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Maximum number of iterations in brentq</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.core.two_sample_core">
+<code class="descclassname">permute.core.</code><code class="descname">two_sample_core</code><span class="sig-paren">(</span><em>potential_outcomes_all</em>, <em>nx</em>, <em>tst_stat</em>, <em>alternative='greater'</em>, <em>reps=100000</em>, <em>keep_dist=False</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#two_sample_core"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.two_sample_core" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main workhorse function for two_sample and two_sample_shift</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>potential_outcomes_all</strong> (<em>array-like</em>) &#8211; 2D array of potential outcomes under treatment (1st column)
+and control (2nd column). To be passed in from potential_outcomes</li>
+<li><strong>nx</strong> (<em>int</em>) &#8211; Size of the treatment group x</li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; number of repetitions</li>
+<li><strong>tst_stat</strong> (<em>function</em>) &#8211; The test statistic</li>
+<li><strong>alternative</strong> (<em>{&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;}</em>) &#8211; The alternative hypothesis to test</li>
+<li><strong>keep_dist</strong> (<em>bool</em>) &#8211; flag for whether to store and return the array of values
+of the irr test statistic</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>float</em> &#8211;
+the estimated p-value</li>
+<li><em>float</em> &#8211;
+the test statistic</li>
+<li><em>list</em> &#8211;
+The distribution of test statistics.
+These values are only returned if <cite>keep_dist</cite> == True</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.core.two_sample_shift">
+<code class="descclassname">permute.core.</code><code class="descname">two_sample_shift</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>reps=100000</em>, <em>stat='mean'</em>, <em>alternative='greater'</em>, <em>keep_dist=False</em>, <em>seed=None</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/core.html#two_sample_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.core.two_sample_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>One-sided or two-sided, two-sample permutation test for equality of
+two means, with p-value estimated by simulated random sampling with
+reps replications.</p>
+<p>Tests the hypothesis that x and y are a random partition of x,y
+against the alternative that x comes from a population with mean</p>
+<ol class="loweralpha simple">
+<li>greater than that of the population from which y comes,
+if side = &#8216;greater&#8217;</li>
+<li>less than that of the population from which y comes,
+if side = &#8216;less&#8217;</li>
+<li>different from that of the population from which y comes,
+if side = &#8216;two-sided&#8217;</li>
+</ol>
+<p>If <code class="docutils literal"><span class="pre">keep_dist</span></code>, return the distribution of values of the test statistic;
+otherwise, return only the number of permutations for which the value of
+the test statistic and p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array-like</em>) &#8211; Sample 1</li>
+<li><strong>y</strong> (<em>array-like</em>) &#8211; Sample 2</li>
+<li><strong>reps</strong> (<em>int</em>) &#8211; number of repetitions</li>
+<li><strong>stat</strong> (<em>{&#8216;mean&#8217;, &#8216;t&#8217;}</em>) &#8211; <p>The test statistic.</p>
+<ol class="loweralpha">
+<li>If stat == &#8216;mean&#8217;, the test statistic is (mean(x) - mean(y))
+(equivalently, sum(x), since those are monotonically related)</li>
+<li>If stat == &#8216;t&#8217;, the test statistic is the two-sample t-statistic&#8211;
+but the p-value is still estimated by the randomization,
+approximating the permutation distribution.
+The t-statistic is computed using scipy.stats.ttest_ind</li>
+<li>If stat is a function (a callable object), the test statistic is
+that function.  The function should take a permutation of the pooled
+data and compute the test function from it. For instance, if the
+test statistic is the Kolmogorov-Smirnov distance between the
+empirical distributions of the two samples, max_t <a href="#id5"><span class="problematic" id="id6">|F_x(t) - F_y(t)|</span></a>,
+the test statistic could be written:<p>f = lambda u: np.max(                 [abs(sum(u[:len(x)]&lt;=v)/len(x)-sum(u[len(x):]&lt;=v)/len(y)) for v in u]                )</p>
+</li>
+</ol>
+</li>
+<li><strong>alternative</strong> (<em>{&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;}</em>) &#8211; The alternative hypothesis to test</li>
+<li><strong>keep_dist</strong> (<em>bool</em>) &#8211; flag for whether to store and return the array of values
+of the irr test statistic</li>
+<li><strong>seed</strong> (<em>RandomState instance or {None, int, RandomState instance}</em>) &#8211; If None, the pseudorandom number generator is the RandomState
+instance used by <cite>np.random</cite>;
+If int, seed is the seed used by the random number generator;
+If RandomState instance, seed is the pseudorandom number generator</li>
+<li><strong>shift</strong> (<em>float</em>) &#8211; <p>The relationship between x and y under the null hypothesis.</p>
+<ol class="loweralpha">
+<li>A constant scalar shift in the distribution of y. That is, x is equal
+in distribution to y + shift.</li>
+<li>A tuple containing the function and its inverse (f, finverse), so
+x_i = f(y_i) and y_i = finverse(x_i)</li>
+</ol>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><em>float</em> &#8211;
+the estimated p-value</li>
+<li><em>float</em> &#8211;
+the test statistic</li>
+<li><em>list</em> &#8211;
+The distribution of test statistics.
+These values are only returned if <cite>keep_dist</cite> == True</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015-2019, K. Jarrod Millman, Kellie Ottoboni, and Philip B. Stark.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Regression &mdash; Permutation tests and confidence sets 0.1.alpha5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.alpha5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Permutation tests and confidence sets 0.1.alpha5 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="index.html" />
+    <link rel="next" title="Permutation Tests for Complex Data" href="npc/index.html" />
+    <link rel="prev" title="Two sample permutation tests" href="two-sample.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Permutation tests and confidence sets</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.alpha5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Regression</a><ul>
+<li><a class="reference internal" href="#derivation">Derivation</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="two-sample.html" title="Previous Chapter: Two sample permutation tests"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Two sample pe...</span>
+    </a>
+  </li>
+  <li>
+    <a href="npc/index.html" title="Next Chapter: Permutation Tests for Complex Data"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Permutation T... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="regression">
+<h1>Regression<a class="headerlink" href="#regression" title="Permalink to this headline">¶</a></h1>
+<p>Given <img class="math" src="../_images/math/413f8a8e40062a9090d9d50b88bc7b551b314c26.png" alt="n"/> observations of two scalars <img class="math" src="../_images/math/87efe7e04dfd6ce8180e15f5ecfdb2e8048761b1.png" alt="(x_i, y_i)"/> for
+<img class="math" src="../_images/math/973d1f833068c8e00a13118379570c15e28ceb69.png" alt="i = 1, 2, \dots, n"/>, consider the simple linear regression model</p>
+<div class="math">
+<p><img src="../_images/math/3c3422391075b2eb22f6efe062c94f785f6665e8.png" alt="y_i = a + bx_i + \epsilon_i."/></p>
+</div><p>Assume that <img class="math" src="../_images/math/e048cfb63901d3cd84032d7810d2f2b53b544590.png" alt="\{\epsilon_i\}_{i=1}^{n}"/> are exchangeable.</p>
+<p>You are interested in testing whether the slope of the population
+regression line is non-zero; hence, your null hypothesis is
+<img class="math" src="../_images/math/a08cb970e2e61911fc0024fc926ae553e029cff4.png" alt="b = 0"/>. If <img class="math" src="../_images/math/a08cb970e2e61911fc0024fc926ae553e029cff4.png" alt="b = 0"/>, then the model reduces to
+<img class="math" src="../_images/math/3bc743d25e2db464ad6cbd99666bc57979edea75.png" alt="y_i = a + \epsilon_i"/> for all <img class="math" src="../_images/math/a581f053bbfa5115f42c13094857cdd12a37ec49.png" alt="i"/>. If this is true, the
+<img class="math" src="../_images/math/7fb76b5a7148cf0301fde2cd6f6d0a16ce758698.png" alt="\{y_i\}_{i=1}^{n}"/> are exchangeable since they are just shifted
+versions of the exchangeable <img class="math" src="../_images/math/e048cfb63901d3cd84032d7810d2f2b53b544590.png" alt="\{\epsilon_i\}_{i=1}^{n}"/>. Thus
+every permutation of the <img class="math" src="../_images/math/7fb76b5a7148cf0301fde2cd6f6d0a16ce758698.png" alt="\{y_i\}_{i=1}^{n}"/> has the same
+conditional probability regardless of the <img class="math" src="../_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/>s. Hence every
+pairing <img class="math" src="../_images/math/d791f39076ed0e86ce1c3574a6d99097c0f5ecff.png" alt="(x_i, y_j)"/> for any fixed <img class="math" src="../_images/math/a581f053bbfa5115f42c13094857cdd12a37ec49.png" alt="i"/> and for
+<img class="math" src="../_images/math/6e1e62a9c4c884645e4115bde4e197e6e5a21f52.png" alt="j = 1, 2, \dots, n"/> is equally likely.</p>
+<p>Using the least squares estimate of the slope as the test statistic, you can
+find its exact distribution under the null given the observed data by computing
+the test statistic on all possible pairs formed by permuting the <img class="math" src="../_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>
+values, keeping the original order of the <img class="math" src="../_images/math/188c175aac0a8a9c22499336711b5d7256407254.png" alt="x"/> values. From the
+distribution of the test statistic under the null conditioned on the observed
+data, the is the ratio of the count of the <em>as extreme</em> or <em>more extreme</em> test
+statistics to the total number of such test statistics. You might in principle
+enumerate all <img class="math" src="../_images/math/96ebe730c282203bcc150e2f9d55171aafc9a459.png" alt="n!"/> equally likely pairings and then compute the exact p-value.
+For sufficiently large <img class="math" src="../_images/math/413f8a8e40062a9090d9d50b88bc7b551b314c26.png" alt="n"/>, enumeration becomes infeasible; in which
+case, you could approximate the exact p-value using a uniform random sample of the
+equally likely pairings.</p>
+<p>A parametric approach to this problem would begin by imposing additional
+assumptions on the noise <img class="math" src="../_images/math/19bc0073dde1bcd1a8e6a32b251e80cced668f04.png" alt="\epsilon"/>. For example, if we assume
+that <img class="math" src="../_images/math/0ebba30c6155fa915ca16811b57d72adee0c7a58.png" alt="\{\epsilon_i\}"/> are iid Gaussians with mean zero, then the
+the least squares estimate of the slope normalized by its standard
+error has a <img class="math" src="../_images/math/ef9270877405055756d345facd044e4ab297f858.png" alt="t"/>-distribution with <img class="math" src="../_images/math/573f1dbd55f7a60f53088d2ebc1c19b6d9d20e29.png" alt="n-2"/> degrees of
+freedom. If this additional assumption holds, then we can read the off a
+table. Note that, unlike in the permutation test, we were only able to
+calculate the p-value (even with the additional assumptions) because we happened
+to be able to derive the distribution of this specific test statistic.</p>
+<div class="section" id="derivation">
+<h2>Derivation<a class="headerlink" href="#derivation" title="Permalink to this headline">¶</a></h2>
+<p>Given <img class="math" src="../_images/math/413f8a8e40062a9090d9d50b88bc7b551b314c26.png" alt="n"/> observations</p>
+<div class="math">
+<p><img src="../_images/math/71ed75a6220ab4561c175ec8e3b1ad74dd9d303a.png" alt="y_i = a + bx_i + \epsilon_i,"/></p>
+</div><p>the least square solution is</p>
+<div class="math">
+<p><img src="../_images/math/9d4dfe3ab056707a3da9b45a47f27e5dd68aff53.png" alt="\min_{a, b} \sum_{i=1}^n \left(y_i - a - bx_i \right)^2"/></p>
+</div><p>Taking the partial derivative with respect to <img class="math" src="../_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/></p>
+<div class="math">
+<p><img src="../_images/math/0698dde6de05630a6e4337ef7b7dc61a5c67fbde.png" alt="\frac{\partial }{\partial b} \sum_{i=1}^n \left(y_i - a - bx_i \right)^2
+ &amp;= -2 \sum_{i=1}^n \left(y_i - a - bx_i \right) \\
+ &amp;= -2 \left(\sum_{i=1}^n y_i - na - b \sum_{i=1}^n x_i \right) \\
+ &amp;= -2n \left( \bar{y} - a - b \bar{x} \right)."/></p>
+</div><p>Setting this to <img class="math" src="../_images/math/74c081db590f3d35421c1f6b9afd4cdda36ee210.png" alt="0"/> and solving for <img class="math" src="../_images/math/7dd2a5ea01fbd72ad2a58dd1f3d6ecbfde6208a1.png" alt="a"/> yields our estimate <img class="math" src="../_images/math/b74103745833a2240db713f3a8b2d2c8f256eccb.png" alt="\hat{a}"/></p>
+<div class="math">
+<p><img src="../_images/math/cdf6fe8ab1c06f776b269e1065ff958191bf569b.png" alt="\hat{a} = \bar{y} - b \bar{x}."/></p>
+</div><p>Taking the partial derivative with respect to <img class="math" src="../_images/math/5e87bf41a96deddf6cb485ff530f153f2590e9cc.png" alt="b"/></p>
+<div class="math">
+<p><img src="../_images/math/c610565852592972e6b8517276c5f0e89165f857.png" alt="\frac{\partial }{\partial b} \sum_{i=1}^n \left(y_i - a - bx_i \right)^2
+ &amp;= -2 \sum_{i=1}^n \left(y_i - a - bx_i \right) x_i \\
+ &amp;= -2 \left(\sum_{i=1}^n y_ix_i - a \sum_{i=1}^n x_i - b \sum_{i=1}^n x_ix_i \right) \\
+ &amp;= -2n \left( \overline{xy} - a \bar{x} - b \overline{xx} \right)."/></p>
+</div><p>Plugging in <img class="math" src="../_images/math/b74103745833a2240db713f3a8b2d2c8f256eccb.png" alt="\hat{a}"/>, setting the result to <img class="math" src="../_images/math/74c081db590f3d35421c1f6b9afd4cdda36ee210.png" alt="0"/>, and solving for <img class="math" src="../_images/math/5e87bf41a96deddf6cb485ff530f153f2590e9cc.png" alt="b"/> yields</p>
+<div class="math">
+<p><img src="../_images/math/214f6e740b1644cd53a825007998a1fa0e56355a.png" alt="\hat{b} &amp;= \frac{\overline{xy} - \bar{x}\bar{y}}{\overline{xx} - \bar{x}\bar{x}}
+  = \frac{\mathrm{Cov}(x, y)}{\mathrm{Var}(x)} = \mathrm{Cor}(x, y)\left(\frac{\mathrm{Std}(y)}{\mathrm{Std}(x)}\right)."/></p>
+</div><p>Since <img class="math" src="../_images/math/57af1dc3cec8bce4f1158ee4a949fc7752d00f91.png" alt="\frac{\mathrm{Std}(y)}{\mathrm{Std}(x)}"/> is constant under the
+permutation of <img class="math" src="../_images/math/b124ff74afb0914bb434e8fb849eb56d734412f8.png" alt="y"/>, we can calculate the p-value using the permutation
+test of the correlation.</p>
+<div class="code highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">)])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">epsilon</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">permute.core</span> <span class="kn">import</span> <span class="n">corr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span> <span class="n">pv_left</span><span class="p">,</span> <span class="n">pv_right</span><span class="p">,</span> <span class="n">pv_both</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">corr</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">0.998692462616</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_both</span><span class="p">)</span>
+<span class="go">0.0007</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_right</span><span class="p">)</span>
+<span class="go">0.0007</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_left</span><span class="p">)</span>
+<span class="go">1.0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span> <span class="n">pv_both</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">corr</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">0.103891027265</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_both</span><span class="p">)</span>
+<span class="go">0.765</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_right</span><span class="p">)</span>
+<span class="go">0.3818</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">pv_left</span><span class="p">)</span>
+<span class="go">0.619</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015-2019, K. Jarrod Millman, Kellie Ottoboni, and Philip B. Stark.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

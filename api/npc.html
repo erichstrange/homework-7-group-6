@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Nonparametric combination of tests &mdash; Permutation tests and confidence sets 0.1.alpha5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.4/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.alpha5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="top" title="Permutation tests and confidence sets 0.1.alpha5 documentation" href="../index.html" />
+    <link rel="up" title="API Reference" href="index.html" />
+    <link rel="next" title="Interrater reliability" href="irr.html" />
+    <link rel="prev" title="Stratified testing" href="stratified.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          Permutation tests and confidence sets</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.alpha5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/index.html">Developer Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Nonparametric combination of tests</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="stratified.html" title="Previous Chapter: Stratified testing"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Stratified te...</span>
+    </a>
+  </li>
+  <li>
+    <a href="irr.html" title="Next Chapter: Interrater reliability"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Interrater re... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      
+  <div class="section" id="module-permute.npc">
+<span id="nonparametric-combination-of-tests"></span><h1>Nonparametric combination of tests<a class="headerlink" href="#module-permute.npc" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="permute.npc.fisher">
+<code class="descclassname">permute.npc.</code><code class="descname">fisher</code><span class="sig-paren">(</span><em>pvalues</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#fisher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.fisher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Fisher&#8217;s combining function</p>
+<div class="math">
+<p><img src="../_images/math/28f144d191c7f561f11c758bfd61f0e51c40a35e.png" alt="\-2\sum_i \log(p_i)"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pvalues</strong> (<em>array_like</em>) &#8211; Array of p-values to combine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Fisher&#8217;s combined test statistic</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.npc.inverse_n_weight">
+<code class="descclassname">permute.npc.</code><code class="descname">inverse_n_weight</code><span class="sig-paren">(</span><em>pvalues</em>, <em>size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#inverse_n_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.inverse_n_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the test statistic</p>
+<div class="math">
+<p><img src="../_images/math/5eb35da47c73e8b2c8d4b9c79db3c22e6b8d5cc5.png" alt="-\sum_{s=1}^S\frac{p_s}{\sqrt{N_s}}"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pvalues</strong> (<em>array_like</em>) &#8211; Array of p-values to combine</li>
+<li><strong>size</strong> (<em>array_like</em>) &#8211; The $i$th entry is the sample size used for the $i$th test</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">combined test statistic</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.npc.liptak">
+<code class="descclassname">permute.npc.</code><code class="descname">liptak</code><span class="sig-paren">(</span><em>pvalues</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#liptak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.liptak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Liptak&#8217;s combining function</p>
+<div class="math">
+<p><img src="../_images/math/e01e28a4942fcb3fe967866cb7abf53ad93ba230.png" alt="\sum_i \Phi^{-1}(1-p_i)"/></p>
+</div><p>where <img class="math" src="../_images/math/7835e6ecb9c3fb04a2f6aae1120cd2844d7cb4eb.png" alt="\Phi^{-1}"/> is the inverse CDF of the standard normal distribution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pvalues</strong> (<em>array_like</em>) &#8211; Array of p-values to combine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Liptak&#8217;s combined test statistic</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.npc.npc">
+<code class="descclassname">permute.npc.</code><code class="descname">npc</code><span class="sig-paren">(</span><em>pvalues</em>, <em>distr</em>, <em>combine='fisher'</em>, <em>alternatives='greater'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#npc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.npc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines p-values from individual partial test hypotheses <img class="math" src="../_images/math/e2bba294399d3f73130b087199e2c059372b4fc6.png" alt="H_{0i}"/> against
+<img class="math" src="../_images/math/5b50f6c6d23210d6634cc6a7fef47091953a76fd.png" alt="H_{1i}"/>, <img class="math" src="../_images/math/c66d1fb9d325d40ea1b6eb0466fab7026bffa8e0.png" alt="i=1,\dots,n"/> to test the global null hypothesis</p>
+<div class="math">
+<p><img src="../_images/math/bb9914c83e1b122595a82e9be5e970cc75104374.png" alt="\cap_{i=1}^n H_{0i}"/></p>
+</div><p>against the alternative</p>
+<div class="math">
+<p><img src="../_images/math/79f41ea979ed421a5542ff73cd1038e56b229941.png" alt="\cup_{i=1}^n H_{1i}"/></p>
+</div><p>using an omnibus test statistic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pvalues</strong> (<em>array_like</em>) &#8211; Array of p-values to combine</li>
+<li><strong>distr</strong> (<em>array_like</em>) &#8211; Array of dimension [B, n] where B is the number of permutations and n is
+the number of partial hypothesis tests. The $i$th column of distr contains
+the simulated null distribution of the <img class="math" src="../_images/math/447fc49e1cb392c08b7f18f200099794b698939e.png" alt="i$th test statistic under $H_{0i}"/>.</li>
+<li><strong>combine</strong> (<em>{&#8216;fisher&#8217;, &#8216;liptak&#8217;, &#8216;tippett&#8217;}</em>) &#8211; The combining function to use. Default is &#8220;fisher&#8221;
+TODO: allow user to pass in their own combining function; check that it
+satifies the correct monotonicity. Describe the monotonicity!</li>
+<li><strong>alternatives</strong> (<em>array_like</em>) &#8211; Optional, an array containing the alternatives for each partial test
+(&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;) or a single alternative, if all tests
+have the same alternative hypothesis. Default is &#8220;greater&#8221;.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A single p-value for the global test</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.npc.t2p">
+<code class="descclassname">permute.npc.</code><code class="descname">t2p</code><span class="sig-paren">(</span><em>stat</em>, <em>distr</em>, <em>alternative='greater'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#t2p"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.t2p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the empirical distribution of a test statistic to compute
+its p-value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>stat</strong> (<em>float</em>) &#8211; Test statistic</li>
+<li><strong>distr</strong> (<em>array_like</em>) &#8211; Empirical distribution of statistic</li>
+<li><strong>alternative</strong> (<em>{&#8216;greater&#8217;, &#8216;less&#8217;, &#8216;two-sided&#8217;}</em>) &#8211; The alternative hypothesis to test (default is &#8216;greater&#8217;)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the estimated p-vlaue</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="permute.npc.tippett">
+<code class="descclassname">permute.npc.</code><code class="descname">tippett</code><span class="sig-paren">(</span><em>pvalues</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/permute/npc.html#tippett"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#permute.npc.tippett" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Tippett&#8217;s combining function</p>
+<div class="math">
+<p><img src="../_images/math/056525eff8d63d164dbeb993bb92fa81092dae69.png" alt="\max_i \{1-p_i\}"/></p>
+</div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pvalues</strong> (<em>array_like</em>) &#8211; Array of p-values to combine</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tippett&#8217;s combined test statistic</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2015-2019, K. Jarrod Millman, Kellie Ottoboni, and Philip B. Stark.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
