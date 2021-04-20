@@ -11,7 +11,7 @@ from scipy.stats import binom, hypergeom
 from cryptorandom.cryptorandom import SHA256
 from cryptorandom.sample import random_sample, random_permutation
 
-def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
+def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, method='clopper-pearson'
                         **kwargs):
     """
     Compute a confidence interval for a binomial p, the probability of success in each trial.
@@ -28,6 +28,8 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         Indicates the alternative hypothesis.
     p : float in (0, 1)
         Starting point in search for confidence bounds for probability of success in each trial.
+    method: {'clopper-pearson', 'wang', 'sterne'}
+        The desired computation method
     kwargs : dict
         Key word arguments
 
@@ -51,27 +53,43 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         raise ValueError("Cannot observe more successes than the population size")
     if x < 0:
         raise ValueError("Cannot have negative successes cases")
+    if method not in ['clopper-pearson', 'wang', 'sterne']:
+        raise ValueError("Wrong Method!")
+        
+    if method == 'clopper-pearson':
+        if p is None:
+            p = x / n
+        ci_low = 0.0
+        ci_upp = 1.0
+        if alternative == 'two-sided':
+            cl = 1 - (1 - cl) / 2
+            
+        if alternative != "upper" and x > 0:
+            f = lambda q: cl - binom.cdf(x - 1, n, q)
+            while f(p) < 0:
+                p = (p+1)/2
+            ci_low = brentq(f, 0.0, p, *kwargs)
+            
+        if alternative != "lower" and x < n:
+            f = lambda q: binom.cdf(x, n, q) - (1 - cl)
+            while f(p) < 0:
+                p = p/2
+            ci_upp = brentq(f, 1.0, p, *kwargs)
+        return ci_low, ci_upp
+        
+    if method == 'wang':
+            wang_binom_conf(n, x, cl, p)
+        
+    if method == 'sterne':
+            sterne_binom_conf(n, x, cl, p)
 
-    if p is None:
-        p = x / n
-    ci_low = 0.0
-    ci_upp = 1.0
 
-    if alternative == 'two-sided':
-        cl = 1 - (1 - cl) / 2
 
-    if alternative != "upper" and x > 0:
-        f = lambda q: cl - binom.cdf(x - 1, n, q)
-        while f(p) < 0:
-            p = (p+1)/2
-        ci_low = brentq(f, 0.0, p, *kwargs)
-    if alternative != "lower" and x < n:
-        f = lambda q: binom.cdf(x, n, q) - (1 - cl)
-        while f(p) < 0:
-            p = p/2
-        ci_upp = brentq(f, 1.0, p, *kwargs)
+def wang_binom_conf(n, x, cl, p):
+    pass
 
-    return ci_low, ci_upp
+def sterne_binom_conf(n, x, cl, p):
+    pass
 
 
 def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
