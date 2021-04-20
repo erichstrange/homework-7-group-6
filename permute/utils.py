@@ -47,6 +47,10 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         Maximum number of iterations.
     """
     assert alternative in ("two-sided", "lower", "upper")
+    if n < x:
+        raise ValueError("Cannot observe more successes than the population size")
+    if x < 0:
+        raise ValueError("Cannot have negative successes cases")
 
     if p is None:
         p = x / n
@@ -110,6 +114,16 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         Maximum number of iterations.
     """
     assert alternative in ("two-sided", "lower", "upper")
+    if n < x:
+        raise ValueError("Cannot observe more good elements than the sample size")
+    if x < 0:
+        raise ValueError("Cannot have negative successes cases")
+    if N < n:
+        raise ValueError("Population size cannot be smaller than sample")
+    if N < G:
+        raise ValueError("Number of good elements can't exceed the population size")
+    if G < x:
+        raise ValueError("Number of observed good elements can't exceed the number in the population")
 
     if G is None:
         G = (x / n) * N
