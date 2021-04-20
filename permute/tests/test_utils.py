@@ -39,7 +39,7 @@ def test_binom_conf_interval():
     expected5 = (0.22244110100812578, 1.0)
     np.testing.assert_equal(res5, expected5)
     
-    lower1,upper1 = binom_conf_interval(10, 4, alternative="lower")
+    lower1,upper1 = binom_conf_interval(10, 4)
     assert(lower1 <= 0.4 <= upper1)
     
     lower2,upper2 = binom_conf_interval(10, 4, alternative="lower")
