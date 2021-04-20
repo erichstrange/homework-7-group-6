@@ -38,6 +38,18 @@ def test_binom_conf_interval():
     res5 = binom_conf_interval(10, 5, cl=0.95, alternative="lower", p=0)
     expected5 = (0.22244110100812578, 1.0)
     np.testing.assert_equal(res5, expected5)
+    
+    lower1,upper1 = binom_conf_interval(10, 4)
+    assert(lower1 <= 0.4 <= upper1)
+    
+    lower2,upper2 = binom_conf_interval(10, 4, alternative="lower")
+    assert(lower2 <= 0.4 <= upper2)
+    
+    lower3,upper3 = binom_conf_interval(10, 4, alternative="upper")
+    assert(lower3 <= 0.4 <= upper3)
+    
+    with pytest.raises(ValueError):
+        binom_conf_interval(4, 10)
 
 
 def test_hypergeom_conf_interval():
