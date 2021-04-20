@@ -84,6 +84,15 @@ def test_hypergeom_conf_interval():
 
     res6 = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="lower", G=0)
     np.testing.assert_equal(res6, expected3)
+    
+    lower1,upper1 = hypergeom_conf_interval(4, 1, 5, cl=0.95, alternative="upper")
+    assert(lower1 == 0.0)
+    
+    lower2,upper2 = hypergeom_conf_interval(4, 1, 5, cl=0.95, alternative="lower")
+    assert(upper2 == 5.0)
+    
+    with pytest.raises(ValueError):
+        hypergeom_conf_interval(5, 6, 10)
 
 
 def test_hypergeometric():
