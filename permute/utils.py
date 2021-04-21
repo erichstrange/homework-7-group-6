@@ -11,8 +11,8 @@ from scipy.stats import binom, hypergeom
 from cryptorandom.cryptorandom import SHA256
 from cryptorandom.sample import random_sample, random_permutation
 
-def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, method='clopper-pearson'
-                        **kwargs):
+def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, 
+                        method='clopper-pearson', **kwargs):
     """
     Compute a confidence interval for a binomial p, the probability of success in each trial.
 
@@ -78,12 +78,14 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, method=
         return ci_low, ci_upp
         
     if method == 'wang':
-            wang_binom_conf(n, x, cl, p)
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return wang_binom_conf(n, x, cl, p)
         
     if method == 'sterne':
-            sterne_binom_conf(n, x, cl, p)
-
-
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return sterne_binom_conf(n, x, cl, p)
 
 def wang_binom_conf(n, x, cl, p):
     pass
@@ -92,8 +94,8 @@ def sterne_binom_conf(n, x, cl, p):
     pass
 
 
-def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
-                            **kwargs):
+def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None, 
+                            method='clopper-pearson', **kwargs):
     """
     Confidence interval for a hypergeometric distribution parameter G, the number of good
     objects in a population in size N, based on the number x of good objects in a simple
@@ -113,6 +115,8 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         Indicates the alternative hypothesis.
     G : int in [0, N]
         Starting point in search for confidence bounds for the hypergeometric parameter G.
+    method: {'clopper-pearson', 'wang', 'sterne'}
+        The desired computation method
     kwargs : dict
         Key word arguments
 
@@ -142,28 +146,50 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         raise ValueError("Number of good elements can't exceed the population size")
     if G < x:
         raise ValueError("Number of observed good elements can't exceed the number in the population")
+    if method not in ['clopper-pearson', 'wang', 'sterne']:
+        raise ValueError("Wrong Method!")
 
-    if G is None:
-        G = (x / n) * N
-    ci_low = 0
-    ci_upp = N
+        
+    if method == 'clopper-pearson':
+        if G is None:
+            G = (x / n) * N
+        ci_low = 0
+        ci_upp = N
 
-    if alternative == 'two-sided':
-        cl = 1 - (1 - cl) / 2
+        if alternative == 'two-sided':
+            cl = 1 - (1 - cl) / 2
 
-    if alternative != "upper" and x > 0:
-        f = lambda q: cl - hypergeom.cdf(x - 1, N, q, n)
-        while f(G) < 0:
-            G = (G+N)/2
-        ci_low = math.ceil(brentq(f, 0.0, G, *kwargs))
+        if alternative != "upper" and x > 0:
+            f = lambda q: cl - hypergeom.cdf(x - 1, N, q, n)
+            while f(G) < 0:
+                G = (G+N)/2
+            ci_low = math.ceil(brentq(f, 0.0, G, *kwargs))
 
-    if alternative != "lower" and x < n:
-        f = lambda q: hypergeom.cdf(x, N, q, n) - (1 - cl)
-        while f(G) < 0:
-            G = G/2
-        ci_upp = math.floor(brentq(f, G, N, *kwargs))
+        if alternative != "lower" and x < n:
+            f = lambda q: hypergeom.cdf(x, N, q, n) - (1 - cl)
+            while f(G) < 0:
+                G = G/2
+            ci_upp = math.floor(brentq(f, G, N, *kwargs))
 
-    return ci_low, ci_upp
+        return ci_low, ci_upp
+    
+    if method == 'wang':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return wang_hypergeom_conf(n, x, N, cl, G)
+        
+    if method == 'sterne':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return sterne_hypergeom_conf(n, x, N, cl, G)
+    
+
+def wang_hypergeom_conf(n, x, N, cl, G):
+    pass
+
+def sterne_hypergeom_conf(n, x, N, cl, G):
+    pass
+    
 
 
 def hypergeometric(x, N, n, G, alternative='greater'):
