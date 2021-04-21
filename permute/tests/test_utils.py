@@ -48,9 +48,14 @@ def test_binom_conf_interval():
     lower3,upper3 = binom_conf_interval(10, 4, alternative="upper")
     assert(lower3 <= 0.4 <= upper3)
     
-    with pytest.raises(ValueError):
-        binom_conf_interval(4, 10)
-
+        
+def test_binom_conf_badinput1():
+    pytest.raises(ValueError, binom_conf_interval, 4, 10)
+    
+def test_binom_conf_badinput2():
+    pytest.raises(ValueError, binom_conf_interval, 10, -4)
+    
+    
 
 def test_hypergeom_conf_interval():
     res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided")
@@ -84,7 +89,19 @@ def test_hypergeom_conf_interval():
 
     res6 = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="lower", G=0)
     np.testing.assert_equal(res6, expected3)
+    
+        
+def test_hypergeometric_conf_badinput1():
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10)
+    
+def test_hypergeometric_conf_badinput2():
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, 1, 4)
 
+def test_hypergeometric_conf_badinput3():
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, 11, 10)
+    
+def test_hypergeometric_conf_badinput4():
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10)
 
 def test_hypergeometric():
     np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'greater'), 
