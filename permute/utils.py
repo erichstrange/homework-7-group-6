@@ -215,7 +215,7 @@ def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
     if x < n:
         while x not in binom_accept(n, ub, alpha, randomized=False):
             ub -= eps
-        lb += eps
+        ub += eps
     return lb, ub
 
 
