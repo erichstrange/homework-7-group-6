@@ -239,13 +239,14 @@ def hypergeom_accept(k,M,n,N, alpha=0.05, randomized=False):
     '''
     assert 0 < alpha < 1, "bad significance level"
     x = np.arange(0, n+1)
-    I = list(x)                    # start with all possible outcomes (then remove some)
-    pmf = hypergeom.pmf(k,M,n,N)         # "frozen" hypergeometric pmf
+    I = list(x)# start with all possible outcomes (then remove some)
+    pmf = hypergeom.pmf(x,M,n,N)         # "frozen" hypergeometric pmf    
     bottom = 0                     # smallest outcome still in I
     top = n                        # largest outcome still in I
     J = []                         # outcomes for which the test is randomized
     p_J = 0                        # probability of outcomes for which test is randomized
     p_tail = 0                     # probability of outcomes excluded from I
+    
     while p_tail < alpha:          # need to remove outcomes from the acceptance region
         pb = pmf[bottom]
         pt = pmf[top]
@@ -313,17 +314,17 @@ def sterne_hypergeom_conf(N, n, x, cl=0.95):
     assert 0 <= x <= n, 'impossible arguments'
     assert n <= N, 'impossible sample size'
     assert 0 < cl < 1, 'silly confidence level'
-    lb = x
-    ub = 1
+    lb = 0
+    ub = N
     alpha = 1-cl
     if x > 0:
         while x not in hypergeom_accept(x,N,lb,n, alpha,  randomized=False):
-            lb += eps
-        lb -= eps
+            lb += 1
+        lb -= 1
     if x < n:
         while x not in hypergeom_accept(x,N, ub, n, alpha, randomized=False):
-            ub -= eps
-        ub += eps
+            ub -= 1
+        ub += 1
     return lb, ub
 
 
