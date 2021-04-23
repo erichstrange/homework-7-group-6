@@ -4,7 +4,7 @@ Various utilities and helper functions.
 
 
 import math
-
+from functools import lru_cache
 import numpy as np
 from scipy.optimize import brentq
 from scipy.stats import binom, hypergeom
@@ -85,13 +85,139 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
     if method == 'sterne':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
-        return sterne_binom_conf(n, x, cl, p)
+        return sterne_binom_conf(n, x, cl)
 
 def wang_binom_conf(n, x, cl, p):
     pass
 
-def sterne_binom_conf(n, x, cl, p):
-    pass
+
+
+@lru_cache(maxsize=None)  # decorate the function to cache the results 
+                          # of calls to the function
+def binom_accept(n, p, alpha=0.05, randomized=False):
+    '''
+    Acceptance region for a randomized binomial test
+    
+    If randomized==True, find the acceptance region for a randomized, exact 
+    level-alpha test of the null hypothesis X~Binomial(n,p). 
+    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+
+    If randomized==False, find the smallest conservative acceptance region.
+
+    Parameters
+    ----------
+    n : integer
+        number of independent trials
+    p : float
+        probability of success in each trial
+    alpha : float
+        desired significance level  
+    ramndomized : Boolean
+        return randomized exact test or conservative non-randomized test?
+  
+    Returns
+    --------
+    If randomized:
+    I : list
+        values for which the test never rejects
+    J : list 
+        values for which the test sometimes rejects
+    gamma : float
+        probability the test does not reject when the value is in J
+    
+    If not randomized:
+    I : list
+        values for which the test does not reject
+    
+    '''
+    assert 0 < alpha < 1, "bad significance level"
+    x = np.arange(0, n+1)
+    I = list(x)                    # start with all possible outcomes (then remove some)
+    pmf = binom.pmf(x,n,p)         # "frozen" binomial pmf
+    bottom = 0                     # smallest outcome still in I
+    top = n                        # largest outcome still in I
+    J = []                         # outcomes for which the test is randomized
+    p_J = 0                        # probability of outcomes for which test is randomized
+    p_tail = 0                     # probability of outcomes excluded from I
+    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+        pb = pmf[bottom]
+        pt = pmf[top]
+        if pb < pt:                # the smaller possibility has smaller probability
+            J = [bottom]
+            p_J = pb
+            bottom += 1
+        elif pb > pt:              # the larger possibility has smaller probability
+            J = [top]
+            p_J = pt
+            top -= 1
+        else:                      
+            if bottom < top:       # the two possibilities have equal probability
+                J = [bottom, top]
+                p_J = pb+pt
+                bottom += 1
+                top -= 1
+            else:                  # there is only one possibility left
+                J = [bottom]
+                p_J = pb
+                bottom +=1
+        p_tail += p_J
+        for j in J:                # remove outcomes from acceptance region
+            I.remove(j)
+    return_val = None
+    if randomized:
+        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
+                                       # to get exact level alpha
+        return_val = I, J, gamma
+    else:
+        while p_tail > alpha:
+            j = J.pop()            # move the outcome into the acceptance region
+            p_tail -= pmf[j]
+            I.append(j)
+        return_val = I
+    return return_val 
+
+
+def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
+    '''
+    two-sided confidence bound for a binomial p
+    
+    Assumes x is a draw from a binomial distribution with parameters
+    n (known) and p (unknown). Finds a confidence interval for p 
+    at confidence level cl by inverting conservative tests
+    
+    Parameters
+    ----------
+    n : int
+        number of trials, nonnegative integer
+    x : int
+        observed number of successes, nonnegative integer not larger than n
+    cl : float
+        confidence level, between 1/2 and 1
+    eps : float in (0, 1)
+        resolution of the grid search
+        
+    Returns
+    -------
+    lb : float
+        lower confidence bound
+    ub : float
+        upper confidence bound
+    '''
+    assert 0 <= x <= n, 'impossible arguments'
+    assert 0 < cl < 1, 'silly confidence level'
+    lb = 0
+    ub = 1
+    alpha = 1-cl
+    if x > 0:
+        while x not in binom_accept(n, lb, alpha, randomized=False):
+            lb += eps
+        lb -= eps
+    if x < n:
+        while x not in binom_accept(n, ub, alpha, randomized=False):
+            ub -= eps
+        ub += eps
+    return lb, ub
+
 
 
 def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None, 
