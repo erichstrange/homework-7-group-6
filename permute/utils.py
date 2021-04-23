@@ -315,7 +315,143 @@ def wang_hypergeom_conf(n, x, N, cl, G):
 
 def sterne_hypergeom_conf(n, x, N, cl, G):
     pass
+
+
+
+@lru_cache(maxsize=None)  # decorate the function to cache the results 
+                          # of calls to the function
+def hypergeom_accept(k,M,n,N, alpha=0.05, randomized=False):
+    '''
+    Acceptance region for a randomized hypergeometric test
     
+    If randomized==True, find the acceptance region for a randomized, exact 
+    level-alpha test of the null hypothesis X~Binomial(n,p). 
+    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+
+    If randomized==False, find the smallest conservative acceptance region.
+
+    Parameters
+    ----------
+    k : integer
+        number of "good items" in sample  
+    M : integer
+        size of population
+    n: integer
+        number of "good items" in population
+    N: integer
+        size of sample
+
+
+
+    alpha : float
+        desired significance level  
+    ramndomized : Boolean
+        return randomized exact test or conservative non-randomized test?
+  
+    Returns
+    --------
+    If randomized:
+    I : list
+        values for which the test never rejects
+    J : list 
+        values for which the test sometimes rejects
+    gamma : float
+        probability the test does not reject when the value is in J
+    
+    If not randomized:
+    I : list
+        values for which the test does not reject
+    
+    '''
+    assert 0 < alpha < 1, "bad significance level"
+    x = np.arange(0, n+1)
+    I = list(x)# start with all possible outcomes (then remove some)
+    pmf = hypergeom.pmf(x,M,n,N)         # "frozen" hypergeometric pmf    
+    bottom = 0                     # smallest outcome still in I
+    top = n                        # largest outcome still in I
+    J = []                         # outcomes for which the test is randomized
+    p_J = 0                        # probability of outcomes for which test is randomized
+    p_tail = 0                     # probability of outcomes excluded from I
+    
+    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+        pb = pmf[bottom]
+        pt = pmf[top]
+        if pb < pt:                # the smaller possibility has smaller probability
+            J = [bottom]
+            p_J = pb
+            bottom += 1
+        elif pb > pt:              # the larger possibility has smaller probability
+            J = [top]
+            p_J = pt
+            top -= 1
+        else:                      
+            if bottom < top:       # the two possibilities have equal probability
+                J = [bottom, top]
+                p_J = pb+pt
+                bottom += 1
+                top -= 1
+            else:                  # there is only one possibility left
+                J = [bottom]
+                p_J = pb
+                bottom +=1
+        p_tail += p_J
+        for j in J:                # remove outcomes from acceptance region
+            I.remove(j)
+    return_val = None
+    if randomized:
+        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
+                                       # to get exact level alpha
+        return_val = I, J, gamma
+    else:
+        while p_tail > alpha:
+            j = J.pop()            # move the outcome into the acceptance region
+            p_tail -= pmf[j]
+            I.append(j)
+        return_val = I
+    return return_val 
+
+
+def sterne_hypergeom_conf(N, n, x, cl=0.95):
+    '''
+    two-sided confidence bound for a binomial p
+    
+    Assumes x is a draw from a hypergeometric distribution with parameters
+    N (known), n (known), and G (unknown). Finds a lower confidence bound for G 
+    at confidence level cl.
+    
+    Parameters
+    ----------
+    N : int
+        population size, nonnegative integer
+    n : int
+        number of trials, nonnegative integer <= N
+    x : int
+        observed number of successes, nonnegative integer <= n
+    cl : float
+        confidence level, between 0 and 1
+        
+    Returns
+    -------
+    lb : float
+        lower confidence bound
+    ub : float
+        upper confidence bound
+    '''
+    assert 0 <= x <= n, 'impossible arguments'
+    assert n <= N, 'impossible sample size'
+    assert 0 < cl < 1, 'silly confidence level'
+    lb = 0
+    ub = N
+    alpha = 1-cl
+    if x > 0:
+        while x not in hypergeom_accept(x,N,lb,n, alpha,  randomized=False):
+            lb += 1
+        lb -= 1
+    if x < n:
+        while x not in hypergeom_accept(x,N, ub, n, alpha, randomized=False):
+            ub -= 1
+        ub += 1
+    return lb, ub
 
 
 def hypergeometric(x, N, n, G, alternative='greater'):
