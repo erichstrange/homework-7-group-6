@@ -4,15 +4,15 @@ Various utilities and helper functions.
 
 
 import math
-
+from functools import lru_cache
 import numpy as np
 from scipy.optimize import brentq
 from scipy.stats import binom, hypergeom
 from cryptorandom.cryptorandom import SHA256
 from cryptorandom.sample import random_sample, random_permutation
 
-def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
-                        **kwargs):
+def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, 
+                        method='clopper-pearson', **kwargs):
     """
     Compute a confidence interval for a binomial p, the probability of success in each trial.
 
@@ -28,6 +28,8 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         Indicates the alternative hypothesis.
     p : float in (0, 1)
         Starting point in search for confidence bounds for probability of success in each trial.
+    method: {'clopper-pearson', 'wang', 'sterne'}
+        The desired computation method
     kwargs : dict
         Key word arguments
 
@@ -47,31 +49,179 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         Maximum number of iterations.
     """
     assert alternative in ("two-sided", "lower", "upper")
+    if n < x:
+        raise ValueError("Cannot observe more successes than the population size")
+    if x < 0:
+        raise ValueError("Cannot have negative successes cases")
+    if method not in ['clopper-pearson', 'wang', 'sterne']:
+        raise ValueError("Wrong Method!")
+        
+    if method == 'clopper-pearson':
+        if p is None:
+            p = x / n
+        ci_low = 0.0
+        ci_upp = 1.0
+        if alternative == 'two-sided':
+            cl = 1 - (1 - cl) / 2
+            
+        if alternative != "upper" and x > 0:
+            f = lambda q: cl - binom.cdf(x - 1, n, q)
+            while f(p) < 0:
+                p = (p+1)/2
+            ci_low = brentq(f, 0.0, p, *kwargs)
+            
+        if alternative != "lower" and x < n:
+            f = lambda q: binom.cdf(x, n, q) - (1 - cl)
+            while f(p) < 0:
+                p = p/2
+            ci_upp = brentq(f, 1.0, p, *kwargs)
+        return ci_low, ci_upp
+        
+    if method == 'wang':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return wang_binom_conf(n, x, cl, p)
+        
+    if method == 'sterne':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return sterne_binom_conf(n, x, cl)
 
-    if p is None:
-        p = x / n
-    ci_low = 0.0
-    ci_upp = 1.0
-
-    if alternative == 'two-sided':
-        cl = 1 - (1 - cl) / 2
-
-    if alternative != "upper" and x > 0:
-        f = lambda q: cl - binom.cdf(x - 1, n, q)
-        while f(p) < 0:
-            p = (p+1)/2
-        ci_low = brentq(f, 0.0, p, *kwargs)
-    if alternative != "lower" and x < n:
-        f = lambda q: binom.cdf(x, n, q) - (1 - cl)
-        while f(p) < 0:
-            p = p/2
-        ci_upp = brentq(f, 1.0, p, *kwargs)
-
-    return ci_low, ci_upp
+def wang_binom_conf(n, x, cl, p):
+    pass
 
 
-def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
-                            **kwargs):
+
+@lru_cache(maxsize=None)  # decorate the function to cache the results 
+                          # of calls to the function
+def binom_accept(n, p, alpha=0.05, randomized=False):
+    '''
+    Acceptance region for a randomized binomial test
+    
+    If randomized==True, find the acceptance region for a randomized, exact 
+    level-alpha test of the null hypothesis X~Binomial(n,p). 
+    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+
+    If randomized==False, find the smallest conservative acceptance region.
+
+    Parameters
+    ----------
+    n : integer
+        number of independent trials
+    p : float
+        probability of success in each trial
+    alpha : float
+        desired significance level  
+    ramndomized : Boolean
+        return randomized exact test or conservative non-randomized test?
+  
+    Returns
+    --------
+    If randomized:
+    I : list
+        values for which the test never rejects
+    J : list 
+        values for which the test sometimes rejects
+    gamma : float
+        probability the test does not reject when the value is in J
+    
+    If not randomized:
+    I : list
+        values for which the test does not reject
+    
+    '''
+    assert 0 < alpha < 1, "bad significance level"
+    x = np.arange(0, n+1)
+    I = list(x)                    # start with all possible outcomes (then remove some)
+    pmf = binom.pmf(x,n,p)         # "frozen" binomial pmf
+    bottom = 0                     # smallest outcome still in I
+    top = n                        # largest outcome still in I
+    J = []                         # outcomes for which the test is randomized
+    p_J = 0                        # probability of outcomes for which test is randomized
+    p_tail = 0                     # probability of outcomes excluded from I
+    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+        pb = pmf[bottom]
+        pt = pmf[top]
+        if pb < pt:                # the smaller possibility has smaller probability
+            J = [bottom]
+            p_J = pb
+            bottom += 1
+        elif pb > pt:              # the larger possibility has smaller probability
+            J = [top]
+            p_J = pt
+            top -= 1
+        else:                      
+            if bottom < top:       # the two possibilities have equal probability
+                J = [bottom, top]
+                p_J = pb+pt
+                bottom += 1
+                top -= 1
+            else:                  # there is only one possibility left
+                J = [bottom]
+                p_J = pb
+                bottom +=1
+        p_tail += p_J
+        for j in J:                # remove outcomes from acceptance region
+            I.remove(j)
+    return_val = None
+    if randomized:
+        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
+                                       # to get exact level alpha
+        return_val = I, J, gamma
+    else:
+        while p_tail > alpha:
+            j = J.pop()            # move the outcome into the acceptance region
+            p_tail -= pmf[j]
+            I.append(j)
+        return_val = I
+    return return_val 
+
+
+def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
+    '''
+    two-sided confidence bound for a binomial p
+    
+    Assumes x is a draw from a binomial distribution with parameters
+    n (known) and p (unknown). Finds a confidence interval for p 
+    at confidence level cl by inverting conservative tests
+    
+    Parameters
+    ----------
+    n : int
+        number of trials, nonnegative integer
+    x : int
+        observed number of successes, nonnegative integer not larger than n
+    cl : float
+        confidence level, between 1/2 and 1
+    eps : float in (0, 1)
+        resolution of the grid search
+        
+    Returns
+    -------
+    lb : float
+        lower confidence bound
+    ub : float
+        upper confidence bound
+    '''
+    assert 0 <= x <= n, 'impossible arguments'
+    assert 0 < cl < 1, 'silly confidence level'
+    lb = 0
+    ub = 1
+    alpha = 1-cl
+    if x > 0:
+        while x not in binom_accept(n, lb, alpha, randomized=False):
+            lb += eps
+        lb -= eps
+    if x < n:
+        while x not in binom_accept(n, ub, alpha, randomized=False):
+            ub -= eps
+        ub += eps
+    return lb, ub
+
+
+
+def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None, 
+                            method='clopper-pearson', **kwargs):
     """
     Confidence interval for a hypergeometric distribution parameter G, the number of good
     objects in a population in size N, based on the number x of good objects in a simple
@@ -91,6 +241,8 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         Indicates the alternative hypothesis.
     G : int in [0, N]
         Starting point in search for confidence bounds for the hypergeometric parameter G.
+    method: {'clopper-pearson', 'wang', 'sterne'}
+        The desired computation method
     kwargs : dict
         Key word arguments
 
@@ -110,28 +262,196 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         Maximum number of iterations.
     """
     assert alternative in ("two-sided", "lower", "upper")
+    if n < x:
+        raise ValueError("Cannot observe more good elements than the sample size")
+    if x < 0:
+        raise ValueError("Cannot have negative successes cases")
+    if N < n:
+        raise ValueError("Population size cannot be smaller than sample")
+    if N < G:
+        raise ValueError("Number of good elements can't exceed the population size")
+    if G < x:
+        raise ValueError("Number of observed good elements can't exceed the number in the population")
+    if method not in ['clopper-pearson', 'wang', 'sterne']:
+        raise ValueError("Wrong Method!")
 
-    if G is None:
-        G = (x / n) * N
-    ci_low = 0
-    ci_upp = N
+        
+    if method == 'clopper-pearson':
+        if G is None:
+            G = (x / n) * N
+        ci_low = 0
+        ci_upp = N
 
-    if alternative == 'two-sided':
-        cl = 1 - (1 - cl) / 2
+        if alternative == 'two-sided':
+            cl = 1 - (1 - cl) / 2
 
-    if alternative != "upper" and x > 0:
-        f = lambda q: cl - hypergeom.cdf(x - 1, N, q, n)
-        while f(G) < 0:
-            G = (G+N)/2
-        ci_low = math.ceil(brentq(f, 0.0, G, *kwargs))
+        if alternative != "upper" and x > 0:
+            f = lambda q: cl - hypergeom.cdf(x - 1, N, q, n)
+            while f(G) < 0:
+                G = (G+N)/2
+            ci_low = math.ceil(brentq(f, 0.0, G, *kwargs))
 
-    if alternative != "lower" and x < n:
-        f = lambda q: hypergeom.cdf(x, N, q, n) - (1 - cl)
-        while f(G) < 0:
-            G = G/2
-        ci_upp = math.floor(brentq(f, G, N, *kwargs))
+        if alternative != "lower" and x < n:
+            f = lambda q: hypergeom.cdf(x, N, q, n) - (1 - cl)
+            while f(G) < 0:
+                G = G/2
+            ci_upp = math.floor(brentq(f, G, N, *kwargs))
 
-    return ci_low, ci_upp
+        return ci_low, ci_upp
+    
+    if method == 'wang':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return wang_hypergeom_conf(n, x, N, cl, G)
+        
+    if method == 'sterne':
+        if alternative != "two-sided":
+            raise ValueError("Alternative should be 2-sided for this method")
+        return sterne_hypergeom_conf(n, x, N, cl, G)
+    
+
+def wang_hypergeom_conf(n, x, N, cl, G):
+    pass
+
+def sterne_hypergeom_conf(n, x, N, cl, G):
+    pass
+
+
+
+@lru_cache(maxsize=None)  # decorate the function to cache the results 
+                          # of calls to the function
+def hypergeom_accept(k,M,n,N, alpha=0.05, randomized=False):
+    '''
+    Acceptance region for a randomized hypergeometric test
+    
+    If randomized==True, find the acceptance region for a randomized, exact 
+    level-alpha test of the null hypothesis X~Binomial(n,p). 
+    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+
+    If randomized==False, find the smallest conservative acceptance region.
+
+    Parameters
+    ----------
+    k : integer
+        number of "good items" in sample  
+    M : integer
+        size of population
+    n: integer
+        number of "good items" in population
+    N: integer
+        size of sample
+
+
+
+    alpha : float
+        desired significance level  
+    ramndomized : Boolean
+        return randomized exact test or conservative non-randomized test?
+  
+    Returns
+    --------
+    If randomized:
+    I : list
+        values for which the test never rejects
+    J : list 
+        values for which the test sometimes rejects
+    gamma : float
+        probability the test does not reject when the value is in J
+    
+    If not randomized:
+    I : list
+        values for which the test does not reject
+    
+    '''
+    assert 0 < alpha < 1, "bad significance level"
+    x = np.arange(0, n+1)
+    I = list(x)# start with all possible outcomes (then remove some)
+    pmf = hypergeom.pmf(x,M,n,N)         # "frozen" hypergeometric pmf    
+    bottom = 0                     # smallest outcome still in I
+    top = n                        # largest outcome still in I
+    J = []                         # outcomes for which the test is randomized
+    p_J = 0                        # probability of outcomes for which test is randomized
+    p_tail = 0                     # probability of outcomes excluded from I
+    
+    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+        pb = pmf[bottom]
+        pt = pmf[top]
+        if pb < pt:                # the smaller possibility has smaller probability
+            J = [bottom]
+            p_J = pb
+            bottom += 1
+        elif pb > pt:              # the larger possibility has smaller probability
+            J = [top]
+            p_J = pt
+            top -= 1
+        else:                      
+            if bottom < top:       # the two possibilities have equal probability
+                J = [bottom, top]
+                p_J = pb+pt
+                bottom += 1
+                top -= 1
+            else:                  # there is only one possibility left
+                J = [bottom]
+                p_J = pb
+                bottom +=1
+        p_tail += p_J
+        for j in J:                # remove outcomes from acceptance region
+            I.remove(j)
+    return_val = None
+    if randomized:
+        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
+                                       # to get exact level alpha
+        return_val = I, J, gamma
+    else:
+        while p_tail > alpha:
+            j = J.pop()            # move the outcome into the acceptance region
+            p_tail -= pmf[j]
+            I.append(j)
+        return_val = I
+    return return_val 
+
+
+def sterne_hypergeom_conf(N, n, x, cl=0.95):
+    '''
+    two-sided confidence bound for a binomial p
+    
+    Assumes x is a draw from a hypergeometric distribution with parameters
+    N (known), n (known), and G (unknown). Finds a lower confidence bound for G 
+    at confidence level cl.
+    
+    Parameters
+    ----------
+    N : int
+        population size, nonnegative integer
+    n : int
+        number of trials, nonnegative integer <= N
+    x : int
+        observed number of successes, nonnegative integer <= n
+    cl : float
+        confidence level, between 0 and 1
+        
+    Returns
+    -------
+    lb : float
+        lower confidence bound
+    ub : float
+        upper confidence bound
+    '''
+    assert 0 <= x <= n, 'impossible arguments'
+    assert n <= N, 'impossible sample size'
+    assert 0 < cl < 1, 'silly confidence level'
+    lb = 0
+    ub = N
+    alpha = 1-cl
+    if x > 0:
+        while x not in hypergeom_accept(x,N,lb,n, alpha,  randomized=False):
+            lb += 1
+        lb -= 1
+    if x < n:
+        while x not in hypergeom_accept(x,N, ub, n, alpha, randomized=False):
+            ub -= 1
+        ub += 1
+    return lb, ub
 
 
 def hypergeometric(x, N, n, G, alternative='greater'):
