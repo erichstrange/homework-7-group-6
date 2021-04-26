@@ -365,7 +365,7 @@ def wang_cpci(M, lciw, uciw):
     for ii in kk:
         indp = list(range(n + 1))
         for j in range(n + 1):
-            indp[j] = wang_ind(M[ii], lciw[j], uciw[j])
+            indp[j] = wang_ind(M[ii], lciw[j], uciw[j])\
             * hypergeom.pmf(j, N, M[ii], n)
         kk[ii] = sum(indp)
     return kk
@@ -459,8 +459,8 @@ def wang_hypergeom_conf(n, x, N, alpha):
                 lciw[xvalue] = ff[0, 0]
                 uciw[xvalue] = ff[0, 1]
             else:
-                lciw[xvalue] = ff[0]
-                uciw[xvalue] = ff[1]
+                lciw[xvalue] = ff[0, 0]
+                uciw[xvalue] = ff[0, 1]
             lciw[n + 2 - xvalue - 2] = N - uciw[xvalue]
             uciw[n + 2 - xvalue - 2] = N - lciw[xvalue]
 
