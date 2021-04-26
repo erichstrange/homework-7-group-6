@@ -193,19 +193,19 @@ def test_hypergeom_conf_interval3():
     Tests legal calls to hypergeom_conf_interval, using the  Wang computation method. Asserts proper 
     bounds are returned for two-sided CI's.
     """
-    res = hypergeom_conf_interval(20, 5, 200, cl=0.95, alternative="two-sided", G=None, method='wang')
-    expected = (22, 95)
+    res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
+    expected = (1, 4)
     np.testing.assert_equal(res, expected)
 
-    res1 = hypergeom_conf_interval(20, 10, 200, cl=0.95, alternative="two-sided", G=None, method='wang')
-    expected4 = (62, 138) 
+    res1 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
+    expected4 = (2, 5) 
     np.testing.assert_equal(res1, expected4)
 
     cl = 0.95
     n = 10
-    x = 12
+    x = 5
     N = 20
-    [lot, hit] = [77, 155] 
+    [lot, hit] = [6, 14] 
     alternative = "two-sided"
     [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='Wang')
     np.testing.assert_equal(lo, lot)
