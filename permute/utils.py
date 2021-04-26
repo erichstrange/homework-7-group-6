@@ -264,10 +264,9 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         raise ValueError("Cannot have negative successes cases")
     if N < n:
         raise ValueError("Population size cannot be smaller than sample")
-    if N < G:
-        raise ValueError("Number of good elements can't exceed the population size")
-    if G < x:
-        raise ValueError("Number of observed good elements can't exceed the number in the population")
+    if G:
+        if N < G:
+            raise ValueError("Can't have starting point for number of good elements in population exceed the population size")
     if method not in ['clopper-pearson', 'wang', 'sterne']:
         raise ValueError("Wrong Method!")
 
@@ -304,7 +303,7 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
     if method == 'sterne':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
-        return sterne_hypergeom_conf(n, x, N, cl, G)
+        return sterne_hypergeom_conf(N, n, x, cl)
     
 
 # Wang method
