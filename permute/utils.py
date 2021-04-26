@@ -1,6 +1,4 @@
-"""
-Various utilities and helper functions.
-"""
+"""Various utilities and helper functions."""
 
 
 import math
@@ -11,10 +9,11 @@ from scipy.stats import binom, hypergeom
 from cryptorandom.cryptorandom import SHA256
 from cryptorandom.sample import random_sample, random_permutation
 
-def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None, 
+
+def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
                         method='clopper-pearson', **kwargs):
     """
-    Compute a confidence interval for a binomial p, the probability of success in each trial.
+    Compute a confidence interval for a binomial p.
 
     Parameters
     ----------
@@ -27,7 +26,8 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
     alternative : {"two-sided", "lower", "upper"}
         Indicates the alternative hypothesis.
     p : float in (0, 1)
-        Starting point in search for confidence bounds for probability of success in each trial.
+        Starting point in search for confidence bounds
+        for probability of success in each trial.
     method: {'clopper-pearson', 'wang', 'sterne'}
         The desired computation method
     kwargs : dict
@@ -50,12 +50,13 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
     """
     assert alternative in ("two-sided", "lower", "upper")
     if n < x:
-        raise ValueError("Cannot observe more successes than the population size")
+        raise ValueError("Cannot observe more successes than "
+                         + "the population size")
     if x < 0:
         raise ValueError("Cannot have negative successes cases")
     if method not in ['clopper-pearson', 'wang', 'sterne']:
         raise ValueError("Wrong Method!")
-        
+
     if method == 'clopper-pearson':
         if p is None:
             p = x / n
@@ -63,40 +64,43 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
         ci_upp = 1.0
         if alternative == 'two-sided':
             cl = 1 - (1 - cl) / 2
-            
+
         if alternative != "upper" and x > 0:
-            f = lambda q: cl - binom.cdf(x - 1, n, q)
+            def f(q):
+                return cl - binom.cdf(x - 1, n, q)
             while f(p) < 0:
                 p = (p+1)/2
             ci_low = brentq(f, 0.0, p, *kwargs)
-            
+
         if alternative != "lower" and x < n:
-            f = lambda q: binom.cdf(x, n, q) - (1 - cl)
+            def f(q):
+                return binom.cdf(x, n, q) - (1 - cl)
             while f(p) < 0:
                 p = p/2
             ci_upp = brentq(f, 1.0, p, *kwargs)
         return ci_low, ci_upp
-        
+
     if method == 'wang':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
         return wang_binom_conf(n, x, cl, p)
-        
+
     if method == 'sterne':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
         return sterne_binom_conf(n, x, cl)
 
 
-@lru_cache(maxsize=None)  # decorate the function to cache the results 
-                          # of calls to the function
+@lru_cache(maxsize=None)  # decorate the function to cache the results
+# of calls to the function
 def binom_accept(n, p, alpha=0.05, randomized=False):
-    '''
-    Acceptance region for a randomized binomial test
-    
-    If randomized==True, find the acceptance region for a randomized, exact 
-    level-alpha test of the null hypothesis X~Binomial(n,p). 
-    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+    """
+    Acceptance region for a randomized binomial test.
+
+    If randomized==True, find the acceptance region for a randomized, exact
+    level-alpha test of the null hypothesis X~Binomial(n,p).
+    The acceptance region is the smallest possible.
+    (And not, for instance, symmetric.)
 
     If randomized==False, find the smallest conservative acceptance region.
 
@@ -107,80 +111,83 @@ def binom_accept(n, p, alpha=0.05, randomized=False):
     p : float
         probability of success in each trial
     alpha : float
-        desired significance level  
+        desired significance level
     ramndomized : Boolean
         return randomized exact test or conservative non-randomized test?
-  
+
     Returns
     --------
     If randomized:
-    I : list
+    never_rejects : list
         values for which the test never rejects
-    J : list 
+    never_rejects : list
         values for which the test sometimes rejects
     gamma : float
         probability the test does not reject when the value is in J
-    
+
     If not randomized:
-    I : list
+    never_rejects : list
         values for which the test does not reject
-    
-    '''
+
+    """
     assert 0 < alpha < 1, "bad significance level"
     x = np.arange(0, n+1)
-    I = list(x)                    # start with all possible outcomes (then remove some)
-    pmf = binom.pmf(x,n,p)         # "frozen" binomial pmf
-    bottom = 0                     # smallest outcome still in I
-    top = n                        # largest outcome still in I
-    J = []                         # outcomes for which the test is randomized
-    p_J = 0                        # probability of outcomes for which test is randomized
-    p_tail = 0                     # probability of outcomes excluded from I
-    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+    never_rejects = list(x)  # start w/ all possible outcomes (then remove)
+    pmf = binom.pmf(x, n, p)  # "frozen" binomial pmf
+    bottom = 0  # smallest outcome still in never_rejects
+    top = n  # largest outcome still in never_rejects
+    J = []  # outcomes for which the test is randomized
+    p_J = 0  # probability of outcomes for which test is randomized
+    p_tail = 0  # probability of outcomes excluded from never_rejects
+    while p_tail < alpha:  # need to remove outcomes from the acceptance region
         pb = pmf[bottom]
         pt = pmf[top]
-        if pb < pt:                # the smaller possibility has smaller probability
+        if pb < pt:  # the smaller possibility has smaller probability
             J = [bottom]
             p_J = pb
             bottom += 1
-        elif pb > pt:              # the larger possibility has smaller probability
+        elif pb > pt:  # the larger possibility has smaller probability
             J = [top]
             p_J = pt
             top -= 1
-        else:                      
-            if bottom < top:       # the two possibilities have equal probability
+        else:
+            if bottom < top:  # the two possibilities have equal probability
                 J = [bottom, top]
                 p_J = pb+pt
                 bottom += 1
                 top -= 1
-            else:                  # there is only one possibility left
+            else:  # there is only one possibility left
                 J = [bottom]
                 p_J = pb
-                bottom +=1
+                bottom += 1
         p_tail += p_J
-        for j in J:                # remove outcomes from acceptance region
-            I.remove(j)
+        for j in J:  # remove outcomes from acceptance region
+            never_rejects.remove(j)
     return_val = None
     if randomized:
-        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
-                                       # to get exact level alpha
-        return_val = I, J, gamma
+        """
+        probability of accepting H_0 when X in J
+        to get exact level alpha
+        """
+        gamma = (p_tail-alpha)/p_J
+        return_val = never_rejects, J, gamma
     else:
         while p_tail > alpha:
-            j = J.pop()            # move the outcome into the acceptance region
+            j = J.pop()  # move the outcome into the acceptance region
             p_tail -= pmf[j]
-            I.append(j)
-        return_val = I
-    return return_val 
+            never_rejects.append(j)
+        return_val = never_rejects
+    return return_val
 
 
 def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
-    '''
-    two-sided confidence bound for a binomial p
-    
+    """
+    two-sided confidence bound for a binomial p.
+
     Assumes x is a draw from a binomial distribution with parameters
-    n (known) and p (unknown). Finds a confidence interval for p 
+    n (known) and p (unknown). Finds a confidence interval for p
     at confidence level cl by inverting conservative tests
-    
+
     Parameters
     ----------
     n : int
@@ -191,14 +198,14 @@ def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
         confidence level, between 1/2 and 1
     eps : float in (0, 1)
         resolution of the grid search
-        
+
     Returns
     -------
     lb : float
         lower confidence bound
     ub : float
         upper confidence bound
-    '''
+    """
     assert 0 <= x <= n, 'impossible arguments'
     assert 0 < cl < 1, 'silly confidence level'
     lb = 0
@@ -215,12 +222,13 @@ def sterne_binom_conf(n, x, cl=0.95, eps=10**-3):
     return lb, ub
 
 
-
-def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None, 
+def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
                             method='clopper-pearson', **kwargs):
     """
-    Confidence interval for a hypergeometric distribution parameter G, the number of good
-    objects in a population in size N, based on the number x of good objects in a simple
+    Confidence interval for a hypergeometric distribution parameter G.
+
+    G is the number of good objects in a population in size N,
+    based on the number x of good objects in a simple
     random sample of size n.
 
     Parameters
@@ -236,7 +244,8 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
     alternative : {"two-sided", "lower", "upper"}
         Indicates the alternative hypothesis.
     G : int in [0, N]
-        Starting point in search for confidence bounds for the hypergeometric parameter G.
+        Starting point in search for confidence bounds
+        for the hypergeometric parameter G.
     method: {'clopper-pearson', 'wang', 'sterne'}
         The desired computation method
     kwargs : dict
@@ -259,18 +268,20 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
     """
     assert alternative in ("two-sided", "lower", "upper")
     if n < x:
-        raise ValueError("Cannot observe more good elements than the sample size")
+        raise ValueError("Cannot observe more good elements " +
+                         "than the sample size")
     if x < 0:
         raise ValueError("Cannot have negative successes cases")
     if N < n:
         raise ValueError("Population size cannot be smaller than sample")
     if G:
         if N < G:
-            raise ValueError("Can't have starting point for number of good elements in population exceed the population size")
+            raise ValueError("Can't have starting point for number of good "
+                             + "elements in population exceed the "
+                             + "population size")
     if method not in ['clopper-pearson', 'wang', 'sterne']:
         raise ValueError("Wrong Method!")
 
-        
     if method == 'clopper-pearson':
         if G is None:
             G = (x / n) * N
@@ -281,30 +292,32 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
             cl = 1 - (1 - cl) / 2
 
         if alternative != "upper" and x > 0:
-            f = lambda q: cl - hypergeom.cdf(x - 1, N, q, n)
+            def f(q):
+                return cl - hypergeom.cdf(x - 1, N, q, n)
             while f(G) < 0:
                 G = (G+N)/2
             ci_low = math.ceil(brentq(f, 0.0, G, *kwargs))
 
         if alternative != "lower" and x < n:
-            f = lambda q: hypergeom.cdf(x, N, q, n) - (1 - cl)
+            def f(q):
+                return hypergeom.cdf(x, N, q, n) - (1 - cl)
             while f(G) < 0:
                 G = G/2
             ci_upp = math.floor(brentq(f, G, N, *kwargs))
 
         return ci_low, ci_upp
-    
+
     if method == 'wang':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
         alpha = 1 - cl
         return wang_hypergeom_conf(n, x, N, alpha)
-        
+
     if method == 'sterne':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
         return sterne_hypergeom_conf(N, n, x, cl)
-    
+
 
 # Wang method
 def wang_lci(n, alpha, N):
@@ -366,9 +379,10 @@ def wang_cpci(n, N, M, lciw, uciw):
         indp = list(range(n + 1))
         for j in range(n + 1):
             indp[j] = wang_ind(M[ii], lciw[j], uciw[j])\
-            * hypergeom.pmf(j, N, M[ii], n)
+                * hypergeom.pmf(j, N, M[ii], n)
         kk[ii] = sum(indp)
     return kk
+
 
 def wang_hypergeom_conf(n, x, N, alpha):
     """
@@ -470,112 +484,104 @@ def wang_hypergeom_conf(n, x, N, alpha):
     return lc, uc
 
 
-def sterne_hypergeom_conf(n, x, N, cl, G):
-    pass
+@lru_cache(maxsize=None)
+def hypergeom_accept(k, M, n, N, alpha=0.05, randomized=False):
+    """
+    Acceptance region for a randomized hypergeometric test.
 
-
-
-@lru_cache(maxsize=None)  # decorate the function to cache the results 
-                          # of calls to the function
-def hypergeom_accept(k,M,n,N, alpha=0.05, randomized=False):
-    '''
-    Acceptance region for a randomized hypergeometric test
-    
-    If randomized==True, find the acceptance region for a randomized, exact 
-    level-alpha test of the null hypothesis X~Binomial(n,p). 
-    The acceptance region is the smallest possible. (And not, for instance, symmetric.)
+    If randomized==True, find the acceptance region for a randomized, exact
+    level-alpha test of the null hypothesis X~Binomial(n,p).
+    The acceptance region is the smallest possible.
+    (And not, for instance, symmetric.)
 
     If randomized==False, find the smallest conservative acceptance region.
 
     Parameters
     ----------
     k : integer
-        number of "good items" in sample  
+        number of "good items" in sample
     M : integer
         size of population
     n: integer
         number of "good items" in population
     N: integer
         size of sample
-
-
-
     alpha : float
-        desired significance level  
+        desired significance level
     ramndomized : Boolean
         return randomized exact test or conservative non-randomized test?
-  
+
     Returns
     --------
     If randomized:
-    I : list
+    never_rejects : list
         values for which the test never rejects
-    J : list 
+    J : list
         values for which the test sometimes rejects
     gamma : float
         probability the test does not reject when the value is in J
-    
+
     If not randomized:
-    I : list
+    never_rejects : list
         values for which the test does not reject
-    
-    '''
+
+    """
     assert 0 < alpha < 1, "bad significance level"
     x = np.arange(0, n+1)
-    I = list(x)# start with all possible outcomes (then remove some)
-    pmf = hypergeom.pmf(x,M,n,N)         # "frozen" hypergeometric pmf    
-    bottom = 0                     # smallest outcome still in I
-    top = n                        # largest outcome still in I
-    J = []                         # outcomes for which the test is randomized
-    p_J = 0                        # probability of outcomes for which test is randomized
-    p_tail = 0                     # probability of outcomes excluded from I
-    
-    while p_tail < alpha:          # need to remove outcomes from the acceptance region
+    never_rejects = list(x)  # start w/ all possible outcomes (then remove)
+    pmf = hypergeom.pmf(x, M, n, N)  # "frozen" hypergeometric pmf
+    bottom = 0  # smallest outcome still in never_rejects
+    top = n  # largest outcome still in never_rejects
+    J = []  # outcomes for which the test is randomized
+    p_J = 0  # probability of outcomes for which test is randomized
+    p_tail = 0  # probability of outcomes excluded from never_rejects
+
+    while p_tail < alpha:  # need to remove outcomes from the acceptance region
         pb = pmf[bottom]
         pt = pmf[top]
-        if pb < pt:                # the smaller possibility has smaller probability
+        if pb < pt:  # the smaller possibility has smaller probability
             J = [bottom]
             p_J = pb
             bottom += 1
-        elif pb > pt:              # the larger possibility has smaller probability
+        elif pb > pt:  # the larger possibility has smaller probability
             J = [top]
             p_J = pt
             top -= 1
-        else:                      
-            if bottom < top:       # the two possibilities have equal probability
+        else:
+            if bottom < top:  # the two possibilities have equal probability
                 J = [bottom, top]
                 p_J = pb+pt
                 bottom += 1
                 top -= 1
-            else:                  # there is only one possibility left
+            else:  # there is only one possibility left
                 J = [bottom]
                 p_J = pb
-                bottom +=1
+                bottom += 1
         p_tail += p_J
-        for j in J:                # remove outcomes from acceptance region
-            I.remove(j)
+        for j in J:  # remove outcomes from acceptance region
+            never_rejects.remove(j)
     return_val = None
     if randomized:
-        gamma = (p_tail-alpha)/p_J     # probability of accepting H_0 when X in J 
-                                       # to get exact level alpha
-        return_val = I, J, gamma
+        gamma = (p_tail-alpha)/p_J  # probability of accepting H_0 when X in J
+        # to get exact level alpha
+        return_val = never_rejects, J, gamma
     else:
         while p_tail > alpha:
-            j = J.pop()            # move the outcome into the acceptance region
+            j = J.pop()  # move the outcome into the acceptance region
             p_tail -= pmf[j]
-            I.append(j)
-        return_val = I
-    return return_val 
+            never_rejects.append(j)
+        return_val = never_rejects
+    return return_val
 
 
 def sterne_hypergeom_conf(N, n, x, cl=0.95):
-    '''
-    two-sided confidence bound for a binomial p
-    
+    """
+    two-sided confidence bound for a binomial p.
+
     Assumes x is a draw from a hypergeometric distribution with parameters
-    N (known), n (known), and G (unknown). Finds a lower confidence bound for G 
+    N (known), n (known), and G (unknown). Finds a lower confidence bound for G
     at confidence level cl.
-    
+
     Parameters
     ----------
     N : int
@@ -586,14 +592,14 @@ def sterne_hypergeom_conf(N, n, x, cl=0.95):
         observed number of successes, nonnegative integer <= n
     cl : float
         confidence level, between 0 and 1
-        
+
     Returns
     -------
     lb : float
         lower confidence bound
     ub : float
         upper confidence bound
-    '''
+    """
     assert 0 <= x <= n, 'impossible arguments'
     assert n <= N, 'impossible sample size'
     assert 0 < cl < 1, 'silly confidence level'
@@ -601,19 +607,20 @@ def sterne_hypergeom_conf(N, n, x, cl=0.95):
     ub = N
     alpha = 1-cl
     if x > 0:
-        while x not in hypergeom_accept(x,N,lb,n, alpha,  randomized=False):
+        while x not in hypergeom_accept(x, N, lb, n, alpha,  randomized=False):
             lb += 1
         lb -= 1
     if x < n:
-        while x not in hypergeom_accept(x,N, ub, n, alpha, randomized=False):
+        while x not in hypergeom_accept(x, N, ub, n, alpha, randomized=False):
             ub -= 1
         ub += 1
     return lb, ub
 
 
 def hypergeometric(x, N, n, G, alternative='greater'):
-    
     """
+    Hypergeometric function.
+
     Parameters
     ----------
     x : int
@@ -632,17 +639,21 @@ def hypergeometric(x, N, n, G, alternative='greater'):
        estimated p-value
     """
     if n < x:
-        raise ValueError("Cannot observe more good elements than the sample size")
+        raise ValueError("Cannot observe more good elements "
+                         + "than the sample size")
     if N < n:
         raise ValueError("Population size cannot be smaller than sample")
     if N < G:
-        raise ValueError("Number of good elements can't exceed the population size")
+        raise ValueError("Number of good elements can't "
+                         + "exceed the population size")
     if G < x:
-        raise ValueError("Number of observed good elements can't exceed the number in the population")
+        raise ValueError("Number of observed good elements can't "
+                         + "exceed the number in the population")
 
     assert alternative in ("two-sided", "less", "greater")
     if n < x:
-        raise ValueError("Cannot observe more successes than the population size")
+        raise ValueError("Cannot observe more successes "
+                         + "than the population size")
 
     plower = hypergeom.cdf(x, N, G, n)
     pupper = hypergeom.sf(x-1, N, G, n)
@@ -657,26 +668,28 @@ def hypergeometric(x, N, n, G, alternative='greater'):
 
 def binomial_p(x, n, p, alternative='greater'):
     """
+    Binomial.
+
     Parameters
     ----------
     x : array-like
-       list of elements consisting of x in {0, 1} where 0 represents a failure and
-       1 represents a seccuess
+       list of elements consisting of x in {0, 1} where 0
+       represents a failure and 1 represents a success
     p : int
        hypothesized number of successes in n trials
     n : int
-       number of trials 
+       number of trials
     alternative : {'greater', 'less', 'two-sided'}
        alternative hypothesis to test (default: 'greater')
     Returns
     -------
     float
-       estimated p-value 
+       estimated p-value
     """
-
     assert alternative in ("two-sided", "less", "greater")
     if n < x:
-        raise ValueError("Cannot observe more successes than the population size")
+        raise ValueError("Cannot observe more successes "
+                         + "than the population size")
 
     plower = binom.cdf(x, n, p)
     pupper = binom.sf(x-1, n, p)
@@ -690,15 +703,17 @@ def binomial_p(x, n, p, alternative='greater'):
 
 
 def get_prng(seed=None):
-    """Turn seed into a cryptorandom instance
+    """Turn seed into a cryptorandom instance.
 
     Parameters
     ----------
     seed : {None, int, str, RandomState}
-        If seed is None, return generate a pseudo-random 63-bit seed using np.random
-        and return a new SHA256 instance seeded with it.
-        If seed is a number or str, return a new cryptorandom instance seeded with seed.
-        If seed is already a numpy.random RandomState or SHA256 instance, return it.
+        If seed is None, return generate a pseudo-random
+        63-bit seed using np.random and return a new
+        SHA256 instance seeded with it. If seed is a
+        number or str, return a new cryptorandom
+        instance seeded with seed.If seed is already a
+        numpy.random RandomState or SHA256 instance, return it.
         Otherwise raise ValueError.
 
     Returns
@@ -707,7 +722,7 @@ def get_prng(seed=None):
     """
     if seed is None:
         # Need to specify dtype (Windows defaults to int32)
-        seed = np.random.randint(0, 10**10, dtype=np.int64) # generate an integer
+        seed = np.random.randint(0, 10**10, dtype=np.int64)  # generate integer
     if seed is np.random:
         return np.random.mtrand._rand
     if isinstance(seed, (int, np.integer, float, str)):
@@ -749,7 +764,7 @@ def permute_within_groups(x, group, seed=None):
 
 def permute(x, seed=None):
     """
-    Permute an array in-place
+    Permute an array in-place.
 
     Parameters
     ----------
@@ -771,7 +786,7 @@ def permute(x, seed=None):
 
 def permute_rows(m, seed=None):
     """
-    Permute the rows of a matrix in-place
+    Permute the rows of a matrix in-place.
 
     Parameters
     ----------
@@ -795,10 +810,12 @@ def permute_rows(m, seed=None):
         mprime.append(random_permutation(row, prng=prng))
     return np.array(mprime)
 
+
 def permute_incidence_fixed_sums(incidence, k=1, seed=None):
     """
-    Permute elements of a (binary) incidence matrix, keeping the
-    row and column sums in-tact.
+    Permute elements of a (binary) incidence matrix.
+
+    Keeps the row and column sums in-tact.
 
     Parameters
     ----------
@@ -822,7 +839,6 @@ def permute_incidence_fixed_sums(incidence, k=1, seed=None):
     permuted : 2D ndarray
         The permuted incidence matrix.
     """
-
     if not incidence.ndim == 2:
         raise ValueError("Incidence matrix must be 2D")
 
@@ -873,6 +889,8 @@ def permute_incidence_fixed_sums(incidence, k=1, seed=None):
 
 def potential_outcomes(x, y, f, finverse):
     """
+    Potential Outcomes.
+
     Given observations $x$ under treatment and $y$ under control conditions,
     returns the potential outcomes for units under their unobserved condition
     under the hypothesis that $x_i = f(y_i)$ for all units.
@@ -894,7 +912,6 @@ def potential_outcomes(x, y, f, finverse):
         The first column contains all potential outcomes under the treatment,
         the second column contains all potential outcomes under the control.
     """
-
     tester = np.array(range(5)) + 1
     assert np.allclose(finverse(f(tester)),
                        tester), "f and finverse aren't inverses"
