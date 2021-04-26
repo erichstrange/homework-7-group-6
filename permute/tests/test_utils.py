@@ -1,3 +1,5 @@
+"""Test Suite for utils.py."""
+
 import sys
 import pytest
 
@@ -19,9 +21,10 @@ from ..utils import (binom_conf_interval,
 
 
 def test_binom_conf_interval1():
-    """Clopper-Pearson tests
-    Tests legal calls to binom_conf_interval, using the 
-    default Clopper-Pearson computation method. Asserts proper 
+    """Clopper-Pearson tests.
+
+    Tests legal calls to binom_conf_interval, using the
+    default Clopper-Pearson computation method. Asserts proper
     bounds are returned for both one-sided and two-sided.
     """
     res = binom_conf_interval(10, 3)
@@ -43,91 +46,115 @@ def test_binom_conf_interval1():
     res5 = binom_conf_interval(10, 5, cl=0.95, alternative="lower", p=0)
     expected5 = (0.22244110100812578, 1.0)
     np.testing.assert_equal(res5, expected5)
-    
-    lower1,upper1 = binom_conf_interval(10, 4)
+
+    lower1, upper1 = binom_conf_interval(10, 4)
     assert(lower1 <= 0.4 <= upper1)
-    
-    lower2,upper2 = binom_conf_interval(10, 4, alternative="lower")
+
+    lower2, upper2 = binom_conf_interval(10, 4, alternative="lower")
     assert(lower2 <= 0.4 <= upper2)
-    
-    lower3,upper3 = binom_conf_interval(10, 4, alternative="upper")
+
+    lower3, upper3 = binom_conf_interval(10, 4, alternative="upper")
     assert(lower3 <= 0.4 <= upper3)
-    
+
 
 def test_binom_conf_interval2():
-    """Sterne tests
-    Tests legal calls to binom_conf_interval, using the 
-    Sterne computation method. Asserts proper 
+    """Sterne tests.
+
+    Tests legal calls to binom_conf_interval, using the
+    Sterne computation method. Asserts proper
     bounds are returned for both one-sided and two-sided.
     """
     res = binom_conf_interval(10, 3, 0.95, 'two-sided', None, 'sterne')
     assert(np.isclose(res[0], 0.087))
     assert(np.isclose(res[1], 0.62))
-    
+
     res2 = binom_conf_interval(10, 5, 0.95, 'two-sided', None, 'sterne')
-    assert(res2[0] >=0 and res2[1] >= 0)
-    
-    lower2,upper2 = binom_conf_interval(10, 4,0.95, 'two-sided', None, 'sterne')
-    assert(lower2 <= 0.4 <= upper2)    
-    
-        
+    assert(res2[0] >= 0 and res2[1] >= 0)
+
+    lower2, upper2 = binom_conf_interval(10, 4, 0.95,
+                                         'two-sided', None, 'sterne')
+    assert(lower2 <= 0.4 <= upper2)
+
+
 def test_binom_conf_badinput1():
-    """Clopper-Pearson
+    """Clopper-Pearson.
+
     Observed successes cannot be larger than sample size
     """
     pytest.raises(ValueError, binom_conf_interval, 4, 10)
-    
+
+
 def test_binom_conf_badinput2():
-    """Clopper-Pearson
+    """Clopper-Pearson.
+
     Observed successes cannot be negative
     """
     pytest.raises(ValueError, binom_conf_interval, 10, -4)
-    
+
+
 def test_binom_conf_badinput3():
-    """Sterne
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Sterne.
+
+    With current implementation, Sterne can only be used with two-sided CI
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'lower', None, 'sterne')
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 3, 0.95, 'lower', None, 'sterne')
+
+
 def test_binom_conf_badinput4():
-    """Sterne
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Sterne.
+
+    With current implementation, Sterne can only be used with two-sided CI
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'upper', None, 'sterne')
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 3, 0.95, 'upper', None, 'sterne')
+
+
 def test_binom_conf_badinput5():
-    """Sterne
+    """Sterne.
+
     Observed successes cannot be larger than sample size
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'two-sided', None, 'sterne')
-    
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 11, 0.95, 'two-sided', None, 'sterne')
+
+
 def test_binom_conf_badinput6():
-    """Clopper-Pearson
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Clopper-Pearson.
+
+    With current implementation, Sterne can only be used with two-sided CI
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'lower', None, 'sterne')
-    
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 3, 0.95, 'lower', None, 'sterne')
+
+
 def test_binom_conf_badinput7():
-    """Clopper-Pearson
-    Observed successes cannot be larger than sample size when alternate == 'upper'
+    """Clopper-Pearson.
+
+    Observed successes cannot be larger than sample size
+    when alternate == 'upper'
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'upper', None, 'clopper-pearson')
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 11, 0.95, 'upper', None, 'clopper-pearson')
+
+
 def test_binom_conf_badinput8():
-    """Clopper-Pearson
-    Observed successes cannot be larger than sample size when alternate == 'lower'
+    """Clopper-Pearson.
+
+    Observed successes cannot be larger than sample size
+    when alternate == 'lower'
     """
-    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'lower', None, 'clopper-pearson')
-    
+    pytest.raises(ValueError, binom_conf_interval,
+                  10, 11, 0.95, 'lower', None, 'clopper-pearson')
+
 
 def test_hypergeom_conf_interval1():
-    """Clopper-Pearson Tests
-    Tests legal calls to hypergeom_conf_interval, using the 
-    default Clopper-Pearson computation method. Asserts proper 
+    """Clopper-Pearson Tests.
+
+    Tests legal calls to hypergeom_conf_interval, using the
+    default Clopper-Pearson computation method. Asserts proper
     bounds are returned for two-sided CI's.
-    
+
     """
     res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided")
     expected = (1.0, 4.0)
@@ -144,7 +171,7 @@ def test_hypergeom_conf_interval1():
     res4 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided")
     expected4 = (2.0, 5.0)
     np.testing.assert_equal(res4, expected4)
-    assert(res4[0] >= 0 and res4[1] >=0)
+    assert(res4[0] >= 0 and res4[1] >= 0)
 
     cl = 0.95
     n = 10
@@ -161,187 +188,245 @@ def test_hypergeom_conf_interval1():
 
     res6 = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="lower", G=0)
     np.testing.assert_equal(res6, expected3)
-    
-    
+
+
 def test_hypergeom_conf_interval2():
-    """Sterne Tests
-    Tests legal calls to hypergeom_conf_interval, using the 
-    Sterne computation method. Asserts proper 
+    """Sterne Tests.
+
+    Tests legal calls to hypergeom_conf_interval, using the
+    Sterne computation method. Asserts proper
     bounds are returned for two-sided CI's.
     """
-    res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided", G=None, method='sterne')
-    expected = (0.0,5.0) #This is wrong
+    res = hypergeom_conf_interval(2, 1, 5, cl=0.95,
+                                  alternative="two-sided",
+                                  G=None, method='sterne')
+    expected = (0.0, 5.0)
     np.testing.assert_equal(res, expected)
 
-    res4 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided", G=None, method='sterne')
-    expected4 = (1.0, 5.0) 
+    res4 = hypergeom_conf_interval(2, 2, 5, cl=0.95,
+                                   alternative="two-sided",
+                                   G=None, method='sterne')
+    expected4 = (1.0, 5.0)
     np.testing.assert_equal(res4, expected4)
 
     cl = 0.95
     n = 10
     x = 5
     N = 20
-    [lot, hit] = [5, 15] #this is wrong
+    [lot, hit] = [5, 15]
     alternative = "two-sided"
-    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='sterne')
+    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl,
+                                       alternative=alternative,
+                                       G=None, method='sterne')
     np.testing.assert_equal(lo, lot)
     np.testing.assert_equal(hi, hit)
 
-    
+
 def test_hypergeom_conf_interval3():
-    """Wang Tests
-    Tests legal calls to hypergeom_conf_interval, using the  Wang computation method. Asserts proper 
+    """Wang Tests.
+
+    Tests legal calls to hypergeom_conf_interval,
+    using the Wang computation method. Asserts proper
     bounds are returned for two-sided CI's.
     """
-    res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
+    res = hypergeom_conf_interval(2, 1, 5, cl=0.95,
+                                  alternative="two-sided",
+                                  G=None, method='wang')
     expected = (1, 4)
     np.testing.assert_equal(res, expected)
 
-    res1 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
-    expected4 = (2, 5) 
+    res1 = hypergeom_conf_interval(2, 2, 5, cl=0.95,
+                                   alternative="two-sided",
+                                   G=None, method='wang')
+    expected4 = (2, 5)
     np.testing.assert_equal(res1, expected4)
 
     cl = 0.95
     n = 10
     x = 5
     N = 20
-    [lot, hit] = [6, 14] 
+    [lot, hit] = [6, 14]
     alternative = "two-sided"
-    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='wang')
+    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl,
+                                       alternative=alternative,
+                                       G=None, method='wang')
     np.testing.assert_equal(lo, lot)
     np.testing.assert_equal(hi, hit)
 
-        
+
 def test_hypergeometric_conf_badinput1():
-    """Clopper-Pearson
+    """Clopper-Pearson.
+
     Observed successes cannot be larger than sample size
     """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10)
-    
+
+
 def test_hypergeometric_conf_badinput2():
-    """Clopper-Pearson
-    Population size cannot be smaller than size of sample taken w/o replacement
+    """Clopper-Pearson.
+
+    Population size cannot be smaller than size
+    of sample taken w/o replacement
     """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 1, 4)
 
+
 def test_hypergeometric_conf_badinput3():
-    """Clopper-Pearson
-    Number of observed successes cannot be larger than size of population
+    """Clopper-Pearson.
+
+    Number of observed successes cannot be larger
+    than size of population
     """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 11, 10)
-    
+
+
 def test_hypergeometric_conf_badinput4():
-    """Clopper-Pearson
+    """Clopper-Pearson.
+
     Number of observed successes cannot be negative
     """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10)
-    
+
+
 def test_hypergeometric_conf_badinput5():
-    """Sterne
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Sterne.
+
+    With current implementation,
+    Sterne can only be used with two-sided CI
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'lower', None, 'sterne')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  10, 5, 100, 0.95, 'lower', None, 'sterne')
+
+
 def test_hypergeometric_conf_badinput6():
-    """Sterne
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Sterne.
+
+    With current implementation,
+    Sterne can only be used with two-sided CI
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'upper', None, 'sterne')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  10, 5, 100, 0.95, 'upper', None, 'sterne')
+
+
 def test_hypergeometric_conf_badinput7():
-    """Sterne
+    """Sterne.
+
     Sample size is too big when two-sided
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 101, 5, 100, 0.95, 'two-sided', None, 'sterne')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  101, 5, 100, 0.95, 'two-sided', None, 'sterne')
+
+
 def test_hypergeometric_conf_badinput8():
-    """Sterne
+    """Sterne.
+
     Observed successes cannot be larger than sample size
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10, 0.95,'two-sided', None, 'sterne')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  5, 6, 10, 0.95, 'two-sided', None, 'sterne')
+
+
 def test_hypergeometric_conf_badinput9():
-    """Sterne
+    """Sterne.
+
     Number of observed successes cannot be negative
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10, 0.95, 'two-sided', None, 'sterne')
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  5, -5, 10, 0.95, 'two-sided', None, 'sterne')
 
 
 def test_hypergeometric_conf_badinput10():
-    """Wang
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Wang.
+
+    With current implementation,
+    Wang can only be used with two-sided CI
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'lower', None, 'wang')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  10, 5, 100, 0.95, 'lower', None, 'wang')
+
+
 def test_hypergeometric_conf_badinput11():
-    """Wang
-    With current implementation, Sterne can only be used with two-sided CI 
+    """Wang.
+
+    With current implementation, Wang can only be used with two-sided CI
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'upper', None, 'wang')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  10, 5, 100, 0.95, 'upper', None, 'wang')
+
+
 def test_hypergeometric_conf_badinput12():
-    """Wang
+    """Wang.
+
     Sample size is too big when two-sided
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 101, 5, 100, 0.95, 'two-sided', None, 'wang')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  101, 5, 100, 0.95, 'two-sided', None, 'wang')
+
+
 def test_hypergeometric_conf_badinput13():
-    """Wang
+    """Wang.
+
     Observed successes cannot be larger than sample size
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10, 0.95,'two-sided', None, 'wang')
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  5, 6, 10, 0.95, 'two-sided', None, 'wang')
+
+
 def test_hypergeometric_conf_badinput14():
-    """Wang
+    """Wang.
+
     Number of observed successes cannot be negative
     """
-    pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10, 0.95, 'two-sided', None, 'wang')    
-    
-    
+    pytest.raises(ValueError, hypergeom_conf_interval,
+                  5, -5, 10, 0.95, 'two-sided', None, 'wang')
+
+
 def test_hypergeometric():
-    """Clopper-Pearson"""
-    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'greater'), 
-                        1-hypergeom.cdf(3, 10, 5, 6))
-    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'less'), 
-                        hypergeom.cdf(4, 10, 5, 6))
-    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'two-sided'), 
-                        2*(1-hypergeom.cdf(3, 10, 5, 6)))
+    """Clopper-Pearson."""
+    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'greater'),
+                                   1-hypergeom.cdf(3, 10, 5, 6))
+    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'less'),
+                                   hypergeom.cdf(4, 10, 5, 6))
+    np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'two-sided'),
+                                   2*(1-hypergeom.cdf(3, 10, 5, 6)))
 
 
 def test_hypergeometric_badinput1():
-    """Clopper-Pearson"""
+    """Clopper-Pearson."""
     pytest.raises(ValueError, hypergeometric, 5, 10, 2, 6)
 
 
 def test_hypergeometric_badinput2():
-    """Clopper-Pearson"""
+    """Clopper-Pearson."""
     pytest.raises(ValueError, hypergeometric, 5, 10, 18, 6)
 
 
 def test_hypergeometric_badinput3():
-    """Clopper-Pearson"""
+    """Clopper-Pearson."""
     pytest.raises(ValueError, hypergeometric, 5, 10, 6, 16)
 
 
 def test_hypergeometric_badinput4():
-    """Clopper-Pearson"""
+    """Clopper-Pearson."""
     pytest.raises(ValueError, hypergeometric, 5, 10, 6, 2)
 
 
 def test_binomial_p():
-    np.testing.assert_almost_equal(binomial_p(5, 10, 0.5, 'greater'), 
-                        1-binom.cdf(4, 10, 0.5))
-    np.testing.assert_almost_equal(binomial_p(5, 10, 0.5, 'less'), 
-                        binom.cdf(5, 10, 0.5))
+    """Binomial Test."""
+    np.testing.assert_almost_equal(binomial_p(5, 10, 0.5, 'greater'),
+                                   1-binom.cdf(4, 10, 0.5))
+    np.testing.assert_almost_equal(binomial_p(5, 10, 0.5, 'less'),
+                                   binom.cdf(5, 10, 0.5))
     np.testing.assert_almost_equal(binomial_p(5, 10, 0.5, 'two-sided'), 1)
 
 
 def test_binomial_badinput():
-    """Clopper-Pearson"""
+    """Clopper-Pearson."""
     pytest.raises(ValueError, binomial_p, 10, 5, 0.5)
 
 
 def test_get_random_state():
+    """Random State Test."""
     prng1 = np.random.RandomState(42)
     prng2 = get_prng(42)
     prng3 = get_prng(prng1)
@@ -375,15 +460,15 @@ def test_get_random_state():
 
 
 def test_get_random_state_error():
+    """Random State Error Test."""
     pytest.raises(ValueError, get_prng, [1, 1.11])
 
 
 def test_permute_within_group():
+    """Group Permute Test."""
     x = np.repeat([1, 2, 3] * 3, 3)
     group = np.repeat([1, 2, 3], 9)
-    #response = np.zeros_like(group)
-    #response[[0,  1,  3,  9, 10, 11, 18, 19, 20]] = 1
-    
+
     res1 = permute_within_groups(x, group, seed=42)
     res2 = permute_within_groups(x, group, seed=SHA256(42))
     np.testing.assert_equal(res1, res2)
@@ -394,13 +479,15 @@ def test_permute_within_group():
     np.testing.assert_equal(group, res3)
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="need updated cryptorandom")
+@pytest.mark.skipif(sys.platform == "win32",
+                    reason="need updated cryptorandom")
 def test_permute():
+    """Permute Test."""
     prng = SHA256(42)
 
     x = prng.randint(0, 10, size=20)
     actual = permute(x, prng)
-    expected = np.array([6, 9, 5, 1, 3, 1, 4, 7, 6, 9, 
+    expected = np.array([6, 9, 5, 1, 3, 1, 4, 7, 6, 9,
                          8, 7, 2, 1, 9, 7, 8, 1, 8, 1])
     np.testing.assert_array_equal(actual, expected)
 
@@ -410,11 +497,12 @@ def test_permute():
 
 
 def test_permute_rows():
+    """Permute Rows Test."""
     prng = SHA256(42)
 
     x = prng.randint(0, 10, size=20).reshape(2, 10)
     actual = permute_rows(x, prng)
-    expected = np.array([[9, 1, 8, 6, 9, 1, 5, 4, 3, 6], 
+    expected = np.array([[9, 1, 8, 6, 9, 1, 5, 4, 3, 6],
                          [1, 7, 2, 1, 9, 7, 8, 7, 8, 1]])
     np.testing.assert_array_equal(actual, expected)
 
@@ -424,6 +512,7 @@ def test_permute_rows():
 
 
 def test_permute_incidence_fixed_sums():
+    """Fixed Sums Permute Test."""
     prng = np.random.RandomState(42)
     x0 = prng.randint(2, size=80).reshape((8, 10))
     x1 = permute_incidence_fixed_sums(x0)
@@ -445,20 +534,33 @@ def test_permute_incidence_fixed_sums():
 
 
 def test_permute_incidence_fixed_sums_ND_arr():
-    pytest.raises(ValueError, permute_incidence_fixed_sums, np.random.random((1, 1, 1)))
+    """Fixed Sums Permute Test."""
+    pytest.raises(ValueError, permute_incidence_fixed_sums,
+                  np.random.random((1, 1, 1)))
 
 
 def test_permute_incidence_fixed_sums_non_binary():
-    pytest.raises(ValueError, permute_incidence_fixed_sums, np.array([[1, 2], [3, 4]]))
+    """Fixed Sums Non Binary Permute Test."""
+    pytest.raises(ValueError, permute_incidence_fixed_sums,
+                  np.array([[1, 2], [3, 4]]))
 
 
 def test_potential_outcomes():
+    """Testing Potential Outcomes."""
     x = np.array(range(5)) + 1
     y = x + 4.5
-    f = lambda u: u + 3.5
-    finv = lambda u: u - 3.5
-    g = lambda u: np.exp(u * 2)
-    ginv = lambda u: np.log(u) / 2
+
+    def f(u):
+        return u + 3.5
+
+    def finv(u):
+        return u - 3.5
+
+    def g(g):
+        return np.exp(u * 2)
+
+    def ginv(u):
+        return np.log(u) / 2
 
     resf = potential_outcomes(x, y, f, finv)
     resg = potential_outcomes(x, y, g, ginv)
@@ -488,6 +590,12 @@ def test_potential_outcomes():
 
 
 def test_potential_outcomes_bad_inverse():
-    f = lambda u: u + 3.5
-    ginv = lambda u: np.log(u) / 2
-    pytest.raises(AssertionError, potential_outcomes, np.array([1, 2]), np.array([3, 4]), f, ginv)
+    """Bad inverse test."""
+    def f(u):
+        return u + 3.5
+
+    def ginv(u):
+        return np.log(u) / 2
+
+    pytest.raises(AssertionError, potential_outcomes,
+                  np.array([1, 2]), np.array([3, 4]), f, ginv)
