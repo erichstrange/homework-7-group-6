@@ -78,8 +78,8 @@ Erich (Congo) Strange:
 - Added discussion about the difference among three methods.
 
 Jing Yuan: 
-- Checked whether 2-sided bounds method correctly implements mathematics. 
-- Checked whether the endpoints are found in a numerically stable and efficient manner in the 2-sided bounds method. 
+- Checked whether one-sided bounds method correctly implements mathematics. 
+- Checked whether the endpoints are found in a numerically stable and efficient manner in the one-sided bounds method. 
 - Created new method `wang` for `hypergeom_conf_interval`.
 - Added unit test for `wang`.
 - Calculated the expected width of the 2-sided 95% confidence intervals for method=`clopper-pearson` , method=`sterne`, and method=`wang`.
