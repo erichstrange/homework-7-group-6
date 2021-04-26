@@ -186,7 +186,31 @@ def test_hypergeom_conf_interval2():
     [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='sterne')
     np.testing.assert_equal(lo, lot)
     np.testing.assert_equal(hi, hit)
+
     
+def test_hypergeom_conf_interval3():
+    """Wang Tests
+    Tests legal calls to hypergeom_conf_interval, using the  Wang computation method. Asserts proper 
+    bounds are returned for two-sided CI's.
+    """
+    res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
+    expected = (1, 4)
+    np.testing.assert_equal(res, expected)
+
+    res1 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided", G=None, method='wang')
+    expected4 = (2, 5) 
+    np.testing.assert_equal(res1, expected4)
+
+    cl = 0.95
+    n = 10
+    x = 5
+    N = 20
+    [lot, hit] = [6, 14] 
+    alternative = "two-sided"
+    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='wang')
+    np.testing.assert_equal(lo, lot)
+    np.testing.assert_equal(hi, hit)
+
         
 def test_hypergeometric_conf_badinput1():
     """Clopper-Pearson
@@ -241,7 +265,37 @@ def test_hypergeometric_conf_badinput9():
     Number of observed successes cannot be negative
     """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10, 0.95, 'two-sided', None, 'sterne')
+
+
+def test_hypergeometric_conf_badinput10():
+    """Wang
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'lower', None, 'wang')
     
+def test_hypergeometric_conf_badinput11():
+    """Wang
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'upper', None, 'wang')
+    
+def test_hypergeometric_conf_badinput12():
+    """Wang
+    Sample size is too big when two-sided
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 101, 5, 100, 0.95, 'two-sided', None, 'wang')
+    
+def test_hypergeometric_conf_badinput13():
+    """Wang
+    Observed successes cannot be larger than sample size
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10, 0.95,'two-sided', None, 'wang')
+    
+def test_hypergeometric_conf_badinput14():
+    """Wang
+    Number of observed successes cannot be negative
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10, 0.95, 'two-sided', None, 'wang')    
     
     
 def test_hypergeometric():
