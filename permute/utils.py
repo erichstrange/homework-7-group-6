@@ -359,7 +359,7 @@ def wang_ind(x, a, b):
     return (x >= a) * (x <= b)
 
 
-def wang_cpci(M, lciw, uciw):
+def wang_cpci(n, N, M, lciw, uciw):
     """Wang method: the coverage probability function."""
     kk = list(range(len(M)))
     for ii in kk:
@@ -415,7 +415,7 @@ def wang_hypergeom_conf(n, x, N, alpha):
         lciw[xvalue] = aa[i]
         uciw[xvalue] = N - aa[i]
         M = list(range(N + 1))
-        bb = min(wang_cpci(M, lciw, uciw))
+        bb = min(wang_cpci(n, N, M, lciw, uciw))
         if bb >= 1 - alpha:
             i1 = i
         else:
@@ -449,7 +449,7 @@ def wang_hypergeom_conf(n, x, N, alpha):
                 lciw[n + 2 - xvalue - 2] = N - uciw[xvalue]
                 uciw[n + 2 - xvalue - 2] = N - lciw[xvalue]
                 M = list(range(N + 1))
-                ff[ii, 3] = min(wang_cpci(M, lciw, uciw))
+                ff[ii, 3] = min(wang_cpci(n, N, M, lciw, uciw))
 
             ff = np.array([k for k in ff if k[3] >= 1-alpha])
 
