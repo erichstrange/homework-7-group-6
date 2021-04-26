@@ -207,7 +207,7 @@ def test_hypergeom_conf_interval3():
     N = 20
     [lot, hit] = [6, 14] 
     alternative = "two-sided"
-    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='Wang')
+    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='wang')
     np.testing.assert_equal(lo, lot)
     np.testing.assert_equal(hi, hit)
 
