@@ -18,7 +18,12 @@ from ..utils import (binom_conf_interval,
                      potential_outcomes)
 
 
-def test_binom_conf_interval():
+def test_binom_conf_interval1():
+    """Clopper-Pearson tests
+    Tests legal calls to binom_conf_interval, using the 
+    default Clopper-Pearson computation method. Asserts proper 
+    bounds are returned for both one-sided and two-sided.
+    """
     res = binom_conf_interval(10, 3)
     expected = (0.05154625578928545, 0.6915018049393984)
     np.testing.assert_equal(res, expected)
@@ -48,16 +53,82 @@ def test_binom_conf_interval():
     lower3,upper3 = binom_conf_interval(10, 4, alternative="upper")
     assert(lower3 <= 0.4 <= upper3)
     
+
+def test_binom_conf_interval2():
+    """Sterne tests
+    Tests legal calls to binom_conf_interval, using the 
+    Sterne computation method. Asserts proper 
+    bounds are returned for both one-sided and two-sided.
+    """
+    res = binom_conf_interval(10, 3, 0.95, 'two-sided', None, 'sterne')
+    assert(np.isclose(res[0], 0.087))
+    assert(np.isclose(res[1], 0.62))
+    
+    res2 = binom_conf_interval(10, 5, 0.95, 'two-sided', None, 'sterne')
+    assert(res2[0] >=0 and res2[1] >= 0)
+    
+    lower2,upper2 = binom_conf_interval(10, 4,0.95, 'two-sided', None, 'sterne')
+    assert(lower2 <= 0.4 <= upper2)    
+    
         
 def test_binom_conf_badinput1():
+    """Clopper-Pearson
+    Observed successes cannot be larger than sample size
+    """
     pytest.raises(ValueError, binom_conf_interval, 4, 10)
     
 def test_binom_conf_badinput2():
+    """Clopper-Pearson
+    Observed successes cannot be negative
+    """
     pytest.raises(ValueError, binom_conf_interval, 10, -4)
     
+def test_binom_conf_badinput3():
+    """Sterne
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'lower', None, 'sterne')
+    
+def test_binom_conf_badinput4():
+    """Sterne
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'upper', None, 'sterne')
+    
+def test_binom_conf_badinput5():
+    """Sterne
+    Observed successes cannot be larger than sample size
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'two-sided', None, 'sterne')
+    
+    
+def test_binom_conf_badinput6():
+    """Clopper-Pearson
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 3, 0.95, 'lower', None, 'sterne')
+    
+    
+def test_binom_conf_badinput7():
+    """Clopper-Pearson
+    Observed successes cannot be larger than sample size when alternate == 'upper'
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'upper', None, 'clopper-pearson')
+    
+def test_binom_conf_badinput8():
+    """Clopper-Pearson
+    Observed successes cannot be larger than sample size when alternate == 'lower'
+    """
+    pytest.raises(ValueError, binom_conf_interval, 10, 11, 0.95, 'lower', None, 'clopper-pearson')
     
 
-def test_hypergeom_conf_interval():
+def test_hypergeom_conf_interval1():
+    """Clopper-Pearson Tests
+    Tests legal calls to hypergeom_conf_interval, using the 
+    default Clopper-Pearson computation method. Asserts proper 
+    bounds are returned for two-sided CI's.
+    
+    """
     res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided")
     expected = (1.0, 4.0)
     np.testing.assert_equal(res, expected)
@@ -73,6 +144,7 @@ def test_hypergeom_conf_interval():
     res4 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided")
     expected4 = (2.0, 5.0)
     np.testing.assert_equal(res4, expected4)
+    assert(res4[0] >= 0 and res4[1] >=0)
 
     cl = 0.95
     n = 10
@@ -90,20 +162,90 @@ def test_hypergeom_conf_interval():
     res6 = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="lower", G=0)
     np.testing.assert_equal(res6, expected3)
     
+    
+def test_hypergeom_conf_interval2():
+    """Sterne Tests
+    Tests legal calls to hypergeom_conf_interval, using the 
+    Sterne computation method. Asserts proper 
+    bounds are returned for two-sided CI's.
+    """
+    res = hypergeom_conf_interval(2, 1, 5, cl=0.95, alternative="two-sided", G=None, method='sterne')
+    expected = (0.0,5.0) #This is wrong
+    np.testing.assert_equal(res, expected)
+
+    res4 = hypergeom_conf_interval(2, 2, 5, cl=0.95, alternative="two-sided", G=None, method='sterne')
+    expected4 = (1.0, 5.0) 
+    np.testing.assert_equal(res4, expected4)
+
+    cl = 0.95
+    n = 10
+    x = 5
+    N = 20
+    [lot, hit] = [5, 15] #this is wrong
+    alternative = "two-sided"
+    [lo, hi] = hypergeom_conf_interval(n, x, N, cl=cl, alternative=alternative, G=None,method='sterne')
+    np.testing.assert_equal(lo, lot)
+    np.testing.assert_equal(hi, hit)
+    
         
 def test_hypergeometric_conf_badinput1():
+    """Clopper-Pearson
+    Observed successes cannot be larger than sample size
+    """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10)
     
 def test_hypergeometric_conf_badinput2():
+    """Clopper-Pearson
+    Population size cannot be smaller than size of sample taken w/o replacement
+    """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 1, 4)
 
 def test_hypergeometric_conf_badinput3():
+    """Clopper-Pearson
+    Number of observed successes cannot be larger than size of population
+    """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, 11, 10)
     
 def test_hypergeometric_conf_badinput4():
+    """Clopper-Pearson
+    Number of observed successes cannot be negative
+    """
     pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10)
-
+    
+def test_hypergeometric_conf_badinput5():
+    """Sterne
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'lower', None, 'sterne')
+    
+def test_hypergeometric_conf_badinput6():
+    """Sterne
+    With current implementation, Sterne can only be used with two-sided CI 
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 10, 5, 100, 0.95, 'upper', None, 'sterne')
+    
+def test_hypergeometric_conf_badinput7():
+    """Sterne
+    Sample size is too big when two-sided
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 101, 5, 100, 0.95, 'two-sided', None, 'sterne')
+    
+def test_hypergeometric_conf_badinput8():
+    """Sterne
+    Observed successes cannot be larger than sample size
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, 6, 10, 0.95,'two-sided', None, 'sterne')
+    
+def test_hypergeometric_conf_badinput9():
+    """Sterne
+    Number of observed successes cannot be negative
+    """
+    pytest.raises(ValueError, hypergeom_conf_interval, 5, -5, 10, 0.95, 'two-sided', None, 'sterne')
+    
+    
+    
 def test_hypergeometric():
+    """Clopper-Pearson"""
     np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'greater'), 
                         1-hypergeom.cdf(3, 10, 5, 6))
     np.testing.assert_almost_equal(hypergeometric(4, 10, 5, 6, 'less'), 
@@ -113,18 +255,22 @@ def test_hypergeometric():
 
 
 def test_hypergeometric_badinput1():
+    """Clopper-Pearson"""
     pytest.raises(ValueError, hypergeometric, 5, 10, 2, 6)
 
 
 def test_hypergeometric_badinput2():
+    """Clopper-Pearson"""
     pytest.raises(ValueError, hypergeometric, 5, 10, 18, 6)
 
 
 def test_hypergeometric_badinput3():
+    """Clopper-Pearson"""
     pytest.raises(ValueError, hypergeometric, 5, 10, 6, 16)
 
 
 def test_hypergeometric_badinput4():
+    """Clopper-Pearson"""
     pytest.raises(ValueError, hypergeometric, 5, 10, 6, 2)
 
 
@@ -137,6 +283,7 @@ def test_binomial_p():
 
 
 def test_binomial_badinput():
+    """Clopper-Pearson"""
     pytest.raises(ValueError, binomial_p, 10, 5, 0.5)
 
 

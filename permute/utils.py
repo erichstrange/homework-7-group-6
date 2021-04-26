@@ -87,10 +87,6 @@ def binom_conf_interval(n, x, cl=0.975, alternative="two-sided", p=None,
             raise ValueError("Alternative should be 2-sided for this method")
         return sterne_binom_conf(n, x, cl)
 
-def wang_binom_conf(n, x, cl, p):
-    pass
-
-
 
 @lru_cache(maxsize=None)  # decorate the function to cache the results 
                           # of calls to the function
@@ -268,10 +264,9 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
         raise ValueError("Cannot have negative successes cases")
     if N < n:
         raise ValueError("Population size cannot be smaller than sample")
-    if N < G:
-        raise ValueError("Number of good elements can't exceed the population size")
-    if G < x:
-        raise ValueError("Number of observed good elements can't exceed the number in the population")
+    if G:
+        if N < G:
+            raise ValueError("Can't have starting point for number of good elements in population exceed the population size")
     if method not in ['clopper-pearson', 'wang', 'sterne']:
         raise ValueError("Wrong Method!")
 
@@ -302,16 +297,178 @@ def hypergeom_conf_interval(n, x, N, cl=0.975, alternative="two-sided", G=None,
     if method == 'wang':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
-        return wang_hypergeom_conf(n, x, N, cl, G)
+        alpha = 1 - cl
+        return wang_hypergeom_conf(n, x, N, alpha)
         
     if method == 'sterne':
         if alternative != "two-sided":
             raise ValueError("Alternative should be 2-sided for this method")
-        return sterne_hypergeom_conf(n, x, N, cl, G)
+        return sterne_hypergeom_conf(N, n, x, cl)
     
 
-def wang_hypergeom_conf(n, x, N, cl, G):
-    pass
+# Wang method
+def wang_lci(n, alpha, N):
+    """Wang method: Calculating lower bound of 1-alpha interval."""
+    lci = list(range(n + 1))
+    xx = list(range(n + 1))
+    for i in range(n + 1):
+        if xx[i] < 0.5:
+            lci[i] = 0
+        else:
+            aa = list(range(N + 2))
+            bb = [k + 1 for k in aa]
+            for j in range(N + 1):
+                bb[j+1] = hypergeom.cdf(xx[i] - 1, N, aa[j+1]-1, n)
+
+            dd = list(map(list, zip(aa, bb)))
+            dd = np.array([i for i in dd if i[1] >= 1 - alpha])
+            if (len(dd) == 1):
+                lci[i] = dd[0]
+            else:
+                lci[i] = max(dd[:, 0])
+    return lci
+
+
+def wang_uci(n, alpha, N):
+    """Wang method: Calculating upper bound of 1-alpha interval."""
+    lci = wang_lci(n, alpha, N)
+    uci = [N - i for i in lci]
+    uci.reverse()
+    return uci
+
+
+def wang_cal(n, alpha, N):
+    """
+    Wang method: Calculating needed intervals.
+
+    Two-sided 1-alpha interval and two-sided 1-2alpha interval as well
+    as initialize the final CI interval value
+    """
+    lcin1 = wang_lci(n, alpha / 2, N)
+    ucin1 = wang_uci(n, alpha / 2, N)   # two-sided 1-alpha interval
+    lcin2 = wang_lci(n, alpha, N)
+    ucin2 = wang_uci(n, alpha, N)   # two-sided 1-2alpha interval
+
+    lciw = lcin1  # lcin1<=lciw<=lcin2
+    uciw = ucin1  # ucin2<=uciw<=ucin1
+    return lcin1, ucin1, lcin2, ucin2, lciw, uciw
+
+
+def wang_ind(x, a, b):
+    """Wang method: indicator fucntion of interval."""
+    return (x >= a) * (x <= b)
+
+
+def wang_cpci(M, lciw, uciw):
+    """Wang method: the coverage probability function."""
+    kk = list(range(len(M)))
+    for ii in kk:
+        indp = list(range(n + 1))
+        for j in range(n + 1):
+            indp[j] = wang_ind(M[ii], lciw[j], uciw[j])
+            * hypergeom.pmf(j, N, M[ii], n)
+        kk[ii] = sum(indp)
+    return kk
+
+def wang_hypergeom_conf(n, x, N, alpha):
+    """
+    Wang method for Confidence interval for a hypergeometric distribution.
+
+    CI for parameter G, the number of good objects in a population in size
+    N, based on the number x of good objects in a simple random sample of
+    size n.
+
+    Parameters
+    ----------
+    n : int
+        The number of draws without replacement.
+    x : int
+        The number of "good" objects in the sample.
+    N : int
+        The number of objects in the population.
+    alpha : float in (0, 1)
+        1-alpha will be the desired confidence level.
+
+    Returns
+    -------
+    lc: int
+        lower confidence level with coverage (at least)
+        1-alpha.
+    uc: int
+        upper confidence level with coverage (at least)
+        1-alpha.
+
+    Notes
+    -----
+    G : int in [0, N]
+        Starting point in search for confidence bounds for the
+        hypergeometric parameter G.
+    """
+    lcin1, ucin1, lcin2, ucin2, lciw, uciw = wang_cal(n, alpha, N)
+    if n % 2 == 0:
+        xvalue = int(n / 2)  # even n
+    else:
+        xvalue = int((n + 1) / 2)  # odd n
+    aa = list(range(int(lciw[xvalue]), int(N / 2 + 1)))
+
+    for i in range(len(aa)):
+        lciw[xvalue] = aa[i]
+        uciw[xvalue] = N - aa[i]
+        M = list(range(N + 1))
+        bb = min(wang_cpci(M, lciw, uciw))
+        if bb >= 1 - alpha:
+            i1 = i
+        else:
+            break
+
+    lciw[xvalue] = aa[i1]
+    uciw[xvalue] = N - lciw[xvalue]
+
+    if n % 2 == 0:
+        xvalue = int(n / 2 - 1)  # even n
+    else:
+        xvalue = int((n + 1) / 2 - 1)  # odd n
+
+    while xvalue >= 0:
+        al = int(lcin2[xvalue] - lciw[xvalue] + 1)
+        au = int(uciw[xvalue] - ucin2[xvalue] + 1)
+
+        if (al * au > 1):
+            ff = np.zeros(shape=(al*au, 4))
+            for i in range(al):
+                ff[(i * au):((i + 1) * au), 0] = lciw[xvalue] + i
+                ff[(i * au):((i + 1) * au), 1] = list(range(int(ucin2[xvalue]),
+                                                      (int(uciw[xvalue]) + 1)))
+                ff[(i * au):((i + 1) * au), 2] = (ff[i * au:((i + 1) * au), 1]
+                                                  - ff[i * au:((i + 1) * au),
+                                                       0])
+
+            for ii in range(al * au):
+                lciw[xvalue] = ff[ii, 0]
+                uciw[xvalue] = ff[ii, 1]
+                lciw[n + 2 - xvalue - 2] = N - uciw[xvalue]
+                uciw[n + 2 - xvalue - 2] = N - lciw[xvalue]
+                M = list(range(N + 1))
+                ff[ii, 3] = min(wang_cpci(M, lciw, uciw))
+
+            ff = np.array([k for k in ff if k[3] >= 1-alpha])
+
+            if (len(ff) > 1):
+                index = np.lexsort(ff.T[:3, :])
+                ff = ff[index, :]
+                lciw[xvalue] = ff[0, 0]
+                uciw[xvalue] = ff[0, 1]
+            else:
+                lciw[xvalue] = ff[0]
+                uciw[xvalue] = ff[1]
+            lciw[n + 2 - xvalue - 2] = N - uciw[xvalue]
+            uciw[n + 2 - xvalue - 2] = N - lciw[xvalue]
+
+        xvalue = xvalue - 1
+    lc = lciw[x]
+    uc = uciw[x]
+    return lc, uc
+
 
 def sterne_hypergeom_conf(n, x, N, cl, G):
     pass
