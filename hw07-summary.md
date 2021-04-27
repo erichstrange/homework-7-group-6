@@ -69,19 +69,19 @@ Highlights:
 # Author Contributions
 
 Erich (Congo) Strange:
-- Added unit test for one-sided and two-sided methods.
+- Added unit tests for one-sided and two-sided methods.
 - Checked whether the 2-sided bounds method correctly implements the mathematics. 
 - Checked whether the endpoints are found in a numerically stable and efficient manner in the 2-sided bounds method. 
 - Created compatibility for new methods in `binom_conf_interval` and `hypergeom_conf_interval`.
 - Created new method `sterne` for `binom_conf_interval` and `hypergeom_conf_interval`.
-- Added unit test for `clopper-pearson` and `sterne`.
+- Added unit tests for `clopper-pearson` and `sterne`.
 - Added discussion about the difference among three methods.
 
 Jing Yuan: 
-- Checked whether 2-sided bounds method correctly implements mathematics. 
-- Checked whether the endpoints are found in a numerically stable and efficient manner in the 2-sided bounds method. 
+- Checked whether one-sided bounds method correctly implements mathematics. 
+- Checked whether the endpoints are found in a numerically stable and efficient manner in the one-sided bounds method. 
 - Created new method `wang` for `hypergeom_conf_interval`.
-- Added unit test for `wang`.
+- Added unit tests for `wang`.
 - Calculated the expected width of the 2-sided 95% confidence intervals for method=`clopper-pearson` , method=`sterne`, and method=`wang`.
 - Added discussion about the difference among three methods.
 - Added recommendation about the difference among three methods.
